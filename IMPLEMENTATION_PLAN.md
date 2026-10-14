@@ -1,6 +1,6 @@
 # IMPLEMENTATION PLAN — tp2-fundia
 
-**Revision:** 1 · **Date:** 2026-10-14 · **Previous revisions:** `archive/` (none yet)
+**Revision:** 1 · **Date:** 2026-10-14 · **Previous revisions:** `archive/` (none yet) · **Delivery deadline:** **2026-10-18**
 
 > Small changes (bug fixed, component done, sub-task added) → edit in place. Big changes (architecture, scope, restructure) → move this file to `archive/IMPLEMENTATION_PLAN_rev<N>_<YYYY-MM-DD>.md` and write rev N+1.
 >
@@ -10,7 +10,7 @@
 
 ## 1. Current Implementation Status
 
-**Phase:** Phase 0 — bootstrap done; plan rev 1 awaiting group review. No code yet.
+**Phase:** Phase 1 — build. Plan rev 1 and the delivery schedule (§11) approved 2026-10-14. Missions M1–M9 pending.
 
 | # | Component | Status | Tested? | Notes |
 |---|---|---|---|---|
@@ -20,7 +20,7 @@
 | C3 | Instance loader | ⬜ Not started | — | |
 | C4 | `MaintenanceProblem` — full fitness h | ⬜ Not started | — | must give 4366 / 39 / 22 |
 | C5 | Neighborhoods: swap / insertion / 2-opt (+ incremental evaluation) | ⬜ Not started | — | |
-| C6 | Crossover (OX, PMX) + mutation operators | ⬜ Not started | — | |
+| C6 | Crossover (OX; PMX deferred) + mutation operators | ⬜ Not started | — | |
 | C7 | Greedy descent + random restart (3 variants) | ⬜ Not started | — | |
 | C8 | Simulated annealing + SA calibration script | ⬜ Not started | — | |
 | C9 | Genetic algorithm (+ diversity logging) | ⬜ Not started | — | |
@@ -61,12 +61,14 @@ The three algorithms are deliberately different in how they spend evaluations. G
 - Three neighborhoods (swap, insertion, 2-opt) with sizes as a function of n, plus incremental evaluation for **all three** (the statement requires ≥ 1). Tested against full evaluation, with the time gain measured.
 - Greedy descent + random restart with **all three** successor-selection variants (best improvement, first improvement, random-successor-accept-if-better; the statement requires ≥ 2).
 - Simulated annealing with geometric cooling, calibrated per instance (T0, Tf, α), logging the worsening-move acceptance rate.
-- GA: tournament selection, OX crossover (PMX as an alternative for the extra experiment), swap/insertion mutation, elitism, budget-only stopping, diversity logging.
+- GA: tournament selection, OX crossover (slide convention), swap/insertion mutation, elitism, budget-only stopping, diversity logging.
 - Full protocol of statement §3: budgets 50k / 150k / 300k, runs 30 / 30 / 10, exact stop, wall-clock time, mean/sd/min/median, boxplots, Mann–Whitney with p-values, convergence curves (median; GA also the population mean).
 - T1, T2 (neighborhood comparison), T3 (main experiments) and the extra "GA pays off?" experiment.
 - Report (PDF, ~5 pages plus appendices, no code in the body) and README with one command per table and figure.
 
 **Explicitly deferred (Phase 2+, only if time is left):**
+- PMX crossover and the GA-PMX arm of the extra experiment (cut 2026-10-14 for the 18/10 deadline; OX is the class operator and is enough for §2.5).
+- The SA sensitivity check that counts calibration samples in B. The report only states that calibration was done offline, as hyperparameter tuning.
 - Numba/NumPy acceleration. Pure Python is fast enough (§1 benchmark). Revisit only if T2 plus calibration sweeps get slow.
 - A memetic GA (GA + local search). Interesting, but it's a fourth algorithm the statement doesn't ask for. It could be a sentence in the discussion.
 - Adaptive / reheating SA schedules. Geometric cooling is what the statement suggests and what the class covered.
@@ -129,7 +131,7 @@ The three algorithms are deliberately different in how they spend evaluations. G
 
 ### FR-4 — Extra experiment: does recombination help? (§5 last bullet)
 - **Trigger:** `make extra`
-- **Input:** GA variants on all 3 instances, same budgets and run counts: (a) GA-OX (main config), (b) GA mutation-only (Pc = 0), (c) GA "headless chicken" (OX with a random permutation as second parent, Jones 1995), (d) GA-PMX.
+- **Input:** GA variants on all 3 instances, same budgets and run counts: (a) GA-OX (main config), (b) GA mutation-only (Pc = 0), (c) GA "headless chicken" (OX with a random permutation as second parent, Jones 1995). (A fourth arm, GA-PMX, is deferred; see §3.)
 - **Output:** `results/<date>_extra/…` (same schema), table plus boxplots plus pairwise tests.
 - **Hypothesis framed in the report:** OX preserves contiguous blocks and relative order. If good solutions share useful blocks ("visit this cluster of nearby, similar-deadline assets in this order"), then (a) should beat (b) and (c). If (a) ≈ (c), crossover is acting as macro-mutation and recombination doesn't carry building blocks.
 
@@ -173,7 +175,7 @@ The three algorithms are deliberately different in how they spend evaluations. G
           ┌────────────────────┼─────────────────────┐
           ▼                    ▼                     ▼
    C7 GreedyDescent     C8 SimulatedAnnealing   C9 GeneticAlgorithm
-   (best/first/random)  (geometric schedule,    (tournament, OX/PMX,
+   (best/first/random)  (geometric schedule,    (tournament, OX,    
    + random restart      acceptance log)         mutation, elitism,
                                                  diversity log)
           └────────────────────┼─────────────────────┘
@@ -230,31 +232,32 @@ This project has no external services at runtime. The "integrations" are the loc
 |---|---|
 | Tooling | TP1 used `relatorio/main.tex` + `referencias.bib` + `figuras/`. Locally, `pdflatex`/`latexmk` are **not installed** (checked 2026-10-14). |
 | Credential type | Overleaf account (if Git sync is used: Overleaf Git token, which goes in `CREDENTIALS.md`) |
-| Existing or to-create | TODO: confirm whether the group has an Overleaf project for TP2 |
+| Existing or to-create | **Decided 2026-10-14:** compile locally with TeX Live (`make report`) while writing; export `relatorio/` as a zip to an Overleaf project for the group's final edits. |
 | Setup steps | Read `.agents/skills/overleaf/SKILL.md` first. Option A: Overleaf Git integration (premium; user `git` + token). Option B: zip upload of `relatorio/`. Option C: install TeX Live locally (`sudo apt install latexmk texlive-latex-extra texlive-lang-portuguese`), which needs sudo. |
 
 **Potential issues:** generated `tabelas/*.tex` and `figuras/*.pdf` must reach Overleaf after each analysis run, so a manual upload every time is error-prone. Prefer Git sync (A) or local TeX (C).
 
-**Overall feasibility:** ⚠️ — works, but the workflow choice is pending (Known Holes #4).
+**Overall feasibility:** ✅ — local TeX Live (Bruno installs it with `sudo apt install latexmk texlive-latex-extra texlive-lang-portuguese texlive-science` before M8), then Overleaf by zip upload.
 
 ### 7.3 GitHub (code delivery)
 
 | Item | Detail |
 |---|---|
 | Repo | `BrunoL28/tp2-fundia`, **private** |
-| Delivery | The statement allows ".zip or a Git repository". The private repo needs professor access or a zip. |
-| Potential issues | The active `gh` account on this machine is `bruno-soares-meerkat`. Commands touching `BrunoL28` repos need `GH_TOKEN=$(gh auth token --user BrunoL28)` or `gh auth switch -u BrunoL28`. |
+| Delivery | **Decided 2026-10-14: clean zip** (`make zip`). It contains only code, tests, configs, results, build files, the delivery README, the instances and the report PDF. No agent-protocol files (`CLAUDE.md`, `AGENTS.md`, `NEXT_UP.md`, `CONTEXT.md`, `IMPLEMENTATION_PLAN.md`, `.agents-skills`). |
+| Collaborators | `BrunoL28` (admin); Arthur Fernandes (`EluriaTecnologia`, write; invite sent 2026-10-14). |
+| Potential issues | The machine has two `gh` accounts; `BrunoL28` is active since 2026-10-14. If `bruno-soares-meerkat` is active again, use `gh auth switch -u BrunoL28`. |
 
-**Overall feasibility:** ✅ — zip via `make zip` as default; repo link if the professors prefer.
+**Overall feasibility:** ✅ — clean zip via `make zip`.
 
 ---
 
 ## 8. Pre-Build Checklist
 
-- [ ] Confirm the delivery deadline and channel (owner: Bruno; source: Moodle / professors). Write it into `CONTEXT.md` §7 and `NEXT_UP.md`.
-- [ ] Confirm the group members (owner: Bruno). Update `CONTEXT.md` §2 and the report cover.
-- [ ] Decide the report workflow: Overleaf Git, zip upload, or local TeX (owner: group). Update §7.2 and Known Holes #4.
-- [ ] Review and approve this plan's design decisions, especially: extended interface (`sucessores` yields `(move, h)`), all three GD variants, offline SA calibration per instance (not counted in B), GA defaults, and the extra experiment design (owner: group).
+- [x] Delivery deadline: **2026-10-18**. Submission channel still to confirm (owner: Bruno).
+- [ ] Group: Bruno + Arthur confirmed; Felipe pending (owner: Bruno). Update `CONTEXT.md` §2 and the report cover.
+- [x] Report workflow: local TeX Live, then Overleaf by zip (§7.2).
+- [x] Review and approve this plan's design decisions, especially: extended interface (`sucessores` yields `(move, h)`), all three GD variants, offline SA calibration per instance (not counted in B), GA defaults, and the extra experiment design (owner: group).
 - [ ] Create the package skeleton and `uv.lock` (C0), then turn the verified scratch facts into tests before writing any algorithm.
 
 ---
@@ -467,7 +470,7 @@ This project has no external services at runtime. The "integrations" are the loc
 
 - **Type:** `tp2/problem/operators.py`
 - **OX (Order Crossover, main):** pick cut points a<b uniformly. The child keeps `p1[a..b]` in place, then fills the remaining positions starting at b+1 (wrapping around) with p2's genes in p2's order starting at b+1, skipping genes already present. The symmetric child swaps the parents' roles. This is the class version (Part 3 slide 15/30: "copia bloco do Pai 1; preenche os vazios seguindo a ordem das corridas no Pai 2"). **Check the class's fill convention against the slide example:** P1 = (C1 C2 C3 C4 C5), P2 = (C5 C4 C2 C1 C3), child = (C5 C2 C3 C4 C1). That corresponds to block = positions 1..3 (C2 C3 C4) and filling the free positions **left to right from position 0** with P2's order (C5, C1). It's **not** the textbook "start after b" variant. Implement the slide's convention (left-to-right fill) as `ox`, keep `ox_classic` (Davis 1985, wrap from b+1) as an option, and unit-test the slide example exactly.
-- **PMX (extra experiment):** standard Goldberg & Lingle mapping with chained repair. Unit-test on the textbook example.
+- **PMX (deferred, §3):** standard Goldberg & Lingle mapping with chained repair. Only if time is left after M9.
 - **Step-by-step numeric example for the report (§2.5 requires one):** generated by `python -m tp2.problem.operators --demo ox --seed 1 --n 8`, which prints parents, cut points, the intermediate fill and the child. The output is pasted into the report as a table, not as code.
 - **Mutation:** `mutacao(s)` applies **one** random move of the configured operator (swap by default, as in class) with probability Pm per individual. Pm is the per-individual probability, documented as such. Per-gene rates would also be possible but make Pm harder to compare.
 - **Tests:** children are always valid permutations (hypothesis); OX on the slide example yields exactly (5,2,3,4,1).
@@ -521,7 +524,7 @@ This project has no external services at runtime. The "integrations" are the loc
   2. Run a short `first`-improvement descent to a local optimum (3 restarts) and sample Δ⁺ of random moves *around local optima*. Set **Tf = −q10(Δ⁺_local) / ln(χf)** with χf = 10⁻³, so even the smallest typical worsening near good solutions is almost never accepted at the end ("termina praticamente como greedy descent").
   3. L = 100 (pequena), 300 (media), 1 000 (grande). α then follows from the formula above. The values are stored in `configs/sa_<inst>.json` with the sampled statistics (median, q10, sample sizes), so the report can show the calibration table.
   4. Justification sentence for the report: Δh scales with n (tens on pequena, thousands on grande; statement §2.4). A fixed T across instances would be a random walk on one and greedy descent on another. The per-instance calibration makes the *acceptance profile*, not the temperature, the thing that's held constant.
-  - Is calibration "free"? It's tuning, like choosing N/Pc/Pm for the GA. We disclose its cost (≈ 2–5% of B) in the report, and also run one sensitivity check where calibration samples *are* counted (Known Holes #7).
+  - Is calibration "free"? It's tuning, like choosing N/Pc/Pm for the GA. We disclose its cost (≈ 2–5% of B) in the report (Known Holes #7; the sensitivity check is deferred).
 - **Telemetry:** windows of W = B/100 evaluations: `worse_proposed`, `worse_accepted`, `rate`, `T` at the window end → `sa_acceptance.csv`. Plot: rate vs evaluations, one median line per instance with an IQR band. The expected shape is ≈ 0.9 at the start → ≈ 0 at the end. If the start is ≪ 0.9 or the end ≫ 0, the calibration failed, and that's the diagnostic the statement wants (§6 "SA mal calibrado vira outro algoritmo").
 - **Next:** C10.
 
@@ -610,7 +613,7 @@ This project has no external services at runtime. The "integrations" are the loc
   7. Conclusão (¼ p).
   - Appendices: GD variants table, SA acceptance plot, GA diversity plot, parameter tables, reproduction commands.
 - **Writing:** follow `.agents/skills/humanize-text/SKILL.md`. Every comparative claim cites a p-value from `testes.tex`.
-- **Build:** see §7.2 (pending decision).
+- **Build:** local TeX Live (`make report`), then a zip export to Overleaf (§7.2).
 
 ### C15 — Delivery
 
@@ -623,16 +626,16 @@ This project has no external services at runtime. The "integrations" are the loc
 
 | # | Item | Status | Action |
 |---|---|---|---|
-| 1 | Delivery deadline and channel unknown | **Blocker** (scheduling) | Bruno: check Moodle/class; record in CONTEXT §7 |
-| 2 | Group composition for TP2 | Open | Bruno: confirm (TP1: Arthur Fernandes, Bruno Lima, Felipe Augusto) |
+| 1 | Delivery deadline and channel | Deadline ✅ 2026-10-18; channel Open | Bruno: confirm the submission channel (Moodle?) |
+| 2 | Group composition for TP2 | Open (Felipe) | Bruno + Arthur confirmed 2026-10-14; Felipe Augusto still undefined. Needed for the report cover and README |
 | 3 | Toy instance coordinates aren't in the statement | ✅ Resolved 2026-10-14 | Reconstructed: 1=(3,4), 2=(6,0), 3=(0,8), 4=(6,8); verified 39/22 unique optimum |
-| 4 | Report workflow (Overleaf Git / zip / local TeX — no TeX installed locally) | Open | Group decision; see §7.2 |
+| 4 | Report workflow | ✅ Resolved 2026-10-14 | Local TeX Live → Overleaf by zip (§7.2). Bruno must install TeX Live before M8 |
 | 5 | Interface extension (`sucessores` yields `(move, h)`, extra `aplicar`, `h_s` param) vs the statement's "sugestão mínima" | Low risk | Keep; justify in report §2 as necessary for incremental evaluation without leaking the problem into algorithms |
 | 6 | Incremental eval suffix early-exit (δ = 0 after last touched position) | Deferred | Only if T2 timing shows evaluation dominates |
-| 7 | SA calibration evaluations not counted in B | Open (fairness) | Disclose in the report; run one sensitivity check counting them (expect < 5% of B; negligible effect) |
+| 7 | SA calibration evaluations not counted in B | Low risk | Decided 2026-10-14: disclose in the report as offline hyperparameter tuning. The sensitivity check is deferred (§3) |
 | 8 | GA counts unchanged clones as evaluations | Low risk | Conservative choice; mention it. An alternative cache would favor the GA slightly |
 | 9 | Wall time measured under parallel load | Low risk | Also time 3 sequential runs per cell for the time table |
-| 10 | Group private repo vs professors' access if delivering by Git | Open | Default to `make zip`; ask the professors if a link is preferred |
+| 10 | Delivery format | ✅ Resolved 2026-10-14 | Clean zip (`make zip`), no agent-protocol files (§7.3) |
 | 11 | Greedy 3168 depends on an unstated tie-break | Low risk | Documented (tie → min travel time); cite it in the report as our reproduction |
 | 12 | Which GD variant represents algorithm (A) in the main table | Open | Decide after T3 pilot on media: the best median under budget; all variants in the appendix |
 
@@ -640,21 +643,30 @@ This project has no external services at runtime. The "integrations" are the loc
 
 ## 11. Build Order
 
-1. **C0 scaffolding.** `uv init`, layout, Makefile, `ruff`, empty test. Verify: `make setup test` green.
-2. **C3 + C4 fitness, tests first.** Write the tests for 4366, toy 39/22 (plus brute-force optimum uniqueness), Σp, greedy 3168 and NN 2590, then implement. Verify: `make test`.
-3. **C12 `verify`.** Verify: `make verify` prints all ✔ and exits 0.
-4. **C1 + C2 interface and counting wrapper.** Verify: budget-exactness tests (B+10 calls → B succeed; mid-iteration stop in `sucessores`).
-5. **C5 neighborhoods (full eval first, then incremental).** Verify: neighborhood sizes; distinctness; hypothesis property incremental == full; timing script prints µs/move.
-6. **Architecture test.** The AST import check (algorithms don't import `tp2.problem`). Verify: test fails if a forbidden import is added, then passes once it's removed.
-7. **C7 greedy descent (3 variants).** Verify: on pequena, `first`+swap reaches local optima and logs them, `evals == B`, best re-evaluates correctly. Quick smoke run: 3 runs per variant.
-8. **C10 runner (t2 suite) + C11 minimal (t2 table/plot).** Run T2. Decide the neighborhood and record it in CONTEXT §8 and `configs.py`.
-9. **C8 SA + calibration.** Run `make calibrate-sa` and inspect the acceptance curve on one run per instance. Iterate χ0/χf/L if the curve doesn't go ~0.9 → ~0.
-10. **C6 operators + C9 GA.** Unit-test OX on the slide example and PMX on the textbook example. Pilot on media (5 runs) to confirm N/Pm. Check that the diversity log looks sane.
-11. **T3 full run.** `make experiments`. Sanity checks: `evals == B` on all rows; pequena reaches 1875 in some runs (expected for SA/GD); no `status=error`.
-12. **C11 full analysis.** Generate all tables and figures; review them as a group.
-13. **C13 extra experiment.** `make extra` and its analysis.
-14. **C14 report** following `humanize-text`; fill all numbers from generated tables only.
-15. **C15 delivery.** README reproduction table; `make zip`; clean-clone test: `git clone` → `make all` → identical CSVs (same seeds).
+Delivery schedule approved 2026-10-14 (deadline **2026-10-18**). Each mission is one branch and one PR into `main`.
+
+**Git flow (all missions):**
+- `git switch -c <branch>` from an up-to-date `main` → commits → `git push -u origin <branch>` → `gh pr create` (title and description in PT-BR: what changes, how to test, test evidence).
+- Squash-merge **only after Bruno approves**. To keep the schedule, the next mission may branch off the previous unmerged one (stacked PR) and is rebased onto `main` after the merge.
+- Merge gate: CI green (`uv sync` + `ruff` + `pytest`) and `make verify` OK.
+- Every PR also updates `NEXT_UP.md` (date bump) and the §1 status for its components. A mission ends when its PR is merged.
+- **No attribution:** commit messages, PR texts, branch names and code comments carry no AI/assistant mention or co-author trailer (see `CLAUDE.md` / `AGENTS.md`).
+
+| Day | Mission | Branch | Content (components in §9) | Done when |
+|---|---|---|---|---|
+| 14/10 | **M0** Delivery plan | `docs/plano-entrega` | Deadline, decisions, scope cut and this schedule in the state docs; no-attribution rule in `CLAUDE.md`/`AGENTS.md` | PR merged |
+| 14/10 | **M1** Foundation + fitness | `feat/fundacao-fitness` | C0 (`pyproject.toml` via `uv`, `uv.lock`, `Makefile`, `.github/workflows/ci.yml`), C3, C4 full `h`, C12 `make verify`, `tests/fixtures/toy4.txt`. Tests: 4366, toy 39/22 plus brute-force unique optimum, Σp 55/239/684, greedy 3168 (tie → travel), NN 2590 | CI green; `make verify` prints every ✔ |
+| 14–15/10 | **M2** Interface, counter, neighborhoods | `feat/vizinhancas` | C1, C2 (`BudgetExhausted` at evaluation B+1, best-so-far trace), C5 swap/insertion/2-opt with incremental evaluation, AST architecture test, timing script | Hypothesis: incremental == full; sizes 66/1225/11175 and 121/2401/22201; exact budget |
+| 15/10 | **M3** Local search + runner + T2 | `feat/busca-local-t2` | C7 (best / first / random with K = \|N\|), C10 (multiprocessing, seeds, append CSV, `--resume`), `t2` suite. Run T2 → `results/2026-10-15_t2/`; record the chosen neighborhood in CONTEXT §8 and `configs.py` | `evals == B` on every row; neighborhood chosen with a justification |
+| 15/10 | **M4** Simulated annealing | `feat/simulated-annealing` | C8 (geometric, α derived from B and L), `calibrate_sa` → `configs/sa_*.json`, windowed acceptance log | Acceptance ≈ 0.9 → ≈ 0 on all 3 instances (1-run pilot) |
+| 15–16/10 | **M5** Genetic algorithm | `feat/algoritmo-genetico` | C6 (OX with the slide convention, exact test (5,2,3,4,1); one-move mutation; `--demo ox`), C9 (tournament k=3, Pc=0.9, Pm=0.2, elitism 2, budget-only stop, diversity log). Quick pilot on media | Children always valid permutations; diversity logged per generation |
+| 16/10 | **M6** T3 + extra experiments | `exp/t3-extra` | `make experiments` (3 algorithms × 3 instances × 30/30/10 + GD variants) and `make extra` (OX × Pc = 0 × headless chicken). CSVs + `config.json` in `results/2026-10-16_*`, `LATEST_*` pointers | No `status=error`; re-evaluated h(best_perm) == best_h; pequena reaches 1875 in some run (expected) |
+| 16/10 | **M7** Analysis | `feat/analise` | C11 tables and figures | `make analysis` regenerates everything from the CSVs; group reviews the numbers |
+| 17/10 | **M8** Report | `docs/relatorio` | TeX Live installed by Bruno; C14 `relatorio/main.tex` + `referencias.bib` (~5 pp + appendices, no code), verbatim `verify` output, the 4 mandatory discussions with p-values; `make report`; zip export to Overleaf (read `.agents/skills/overleaf` first) | PDF compiles locally and on Overleaf; every number comes from generated tables |
+| 17/10 | **M9** Delivery | `chore/entrega` | C15: delivery README (PT-BR, "Como reproduzir" table), `scripts/make_zip.sh` | Clean clone reproduces the CSVs; zip has no agent-protocol files and no AI mention |
+| 18/10 | Buffer + submission | — | Final group review, fixes, submission | Delivered |
+
+**Fallback:** if incremental insertion/2-opt delays M2, ship incremental swap only (the statement minimum) and log the rest in §10.
 
 ---
 
@@ -675,7 +687,7 @@ This project has no external services at runtime. The "integrations" are the loc
 | Neighborhood sizes | n = 12/50/150 | 66/1225/11175 (swap, 2-opt), 121/2401/22201 (insertion) | ⬜ |
 | Successor distinctness | n = 12, all ops | no duplicates, none equal to s | ⬜ |
 | OX slide example | P1 = (1,2,3,4,5), P2 = (5,4,2,1,3), block = positions 1..3 | (5,2,3,4,1) | ⬜ |
-| Permutation validity | hypothesis, OX/PMX/mutations | always a permutation of 1..n | ⬜ |
+| Permutation validity | hypothesis, OX/mutations | always a permutation of 1..n | ⬜ |
 | Architecture | AST of `tp2/algorithms/*.py` | no `tp2.problem` import | ⬜ |
 | Run invariants | every T3 row | evals == B; fresh h(best_perm) == best_h | ⬜ |
 | Reproducibility | same seed, two runs | identical best_h and curve | ⬜ |

@@ -15,7 +15,8 @@ _Last updated: 2026-10-14_
 | Prof. Cristiano Leite de Castro | Professor, DEE/UFMG — Engenharia de Sistemas | Statement, grading, oral questioning; author of the Cap. 4 slides | TODO: confirm channel (Moodle / e-mail) |
 | Prof. João Pedro Campos (MSc) | Professor, DEE/UFMG | Co-author of statement and Cap. 4 Parts 1–2 slides; grading | TODO: confirm channel |
 | Bruno Lima | Student, group member (repo owner `BrunoL28`) | Repo, implementation, report | — |
-| Arthur Fernandes, Felipe Augusto | Students — TP1 group (`BrunoL28/tp1-fundIA`) | TODO: confirm they remain in the TP2 group (statement allows keeping TP1 groups; max 4 students) | — |
+| Arthur Fernandes | Student, group member (confirmed 2026-10-14) | Reviews PRs; report | GitHub `EluriaTecnologia` (write access; invite sent 2026-10-14) |
+| Felipe Augusto | Student, TP1 group member | Not yet known whether he joins TP2 (the statement allows keeping TP1 groups; max 4 students) | — |
 
 ## 3. The problem (as stated)
 
@@ -127,7 +128,7 @@ For each asset *j*: position (x_j, y_j), service duration p_j (hours), regulator
 |---|---|---|---|
 | Instance files `INPUTS/manutencao_{pequena,media,grande}.txt` | Problem data | Read-only in repo | Line 1: `n`. Line 2: `x_0 y_0` (base). Lines 3..n+2: `x y p d w` per asset, in order 1..n. Whitespace-separated integers. |
 | GitHub `BrunoL28/tp2-fundia` (private) | Code + state sync; candidate delivery format ("repositório Git") | `BrunoL28` | — |
-| Overleaf (likely, as in TP1) | Report (LaTeX) | TODO: confirm whether the group writes in Overleaf or locally | `relatorio/main.tex` |
+| TeX Live (local) → Overleaf | Report (LaTeX): compiled locally with `make report`, then exported as a zip to Overleaf | Bruno installs TeX Live; Overleaf project to be created by the group | `relatorio/main.tex` |
 | Python + `uv` + `make` | Implementation and experiments (same tooling as TP1) | local | — |
 
 **Instance facts (computed 2026-10-14 from the files):**
@@ -151,7 +152,7 @@ For each asset *j*: position (x_j, y_j), service duration p_j (hours), regulator
 - **Group:** at most 4 students; TP1 groups may continue.
 - **Oral questioning:** any member may be asked about any part of the code, so everyone must understand it all.
 - **Save everything to disk** (CSV): 9 combinations × dozens of runs.
-- Deadline: TODO, not stated in the PDF. Confirm on Moodle or in class.
+- **Deadline: 2026-10-18** (given by the group; not stated in the PDF). Submission channel still to confirm.
 
 ## 8. Decisions made
 
@@ -161,16 +162,20 @@ For each asset *j*: position (x_j, y_j), service duration p_j (hours), regulator
 | 2026-10-14 | Python + `uv` + `Makefile` + `pytest`, mirroring TP1 | Same group and course; proven workflow; `uv` and `make` are installed | Bootstrap (proposed; confirm at review) |
 | 2026-10-14 | All 3 greedy-descent variants implemented (statement requires ≥ 2) | Third variant is cheap given the interface and strengthens the "improvement steps under budget" discussion | Bootstrap (proposed; confirm at review) |
 | 2026-10-14 | Inputs audited for prompt injection before distillation: all 6 files **NÃO** | Standing protocol | `archive/input-audits/2026-10-14-injection-audit.md` |
+| 2026-10-14 | Plan rev 1 design decisions approved (extended interface, 3 GD variants, offline SA calibration, GA defaults, extra experiment) | Plan review | Bruno |
+| 2026-10-14 | Delivery schedule M0–M9 for the 18/10 deadline; scope cut: no PMX, no SA calibration sensitivity check | 4 days left | Bruno |
+| 2026-10-14 | Branch per mission + PR into `main`, squash-merge after Bruno's approval; commits/PRs carry no AI attribution | Group workflow; Arthur joined the repo | Bruno |
+| 2026-10-14 | Report: local TeX Live while writing, then export to Overleaf | No TeX installed; group edits on Overleaf | Bruno |
+| 2026-10-14 | Code delivered as a clean zip (`make zip`), without agent-protocol files | Statement allows zip or Git repo | Bruno |
 
 ## 9. Open questions
 
 | # | Question | Who can answer | Blocking? |
 |---|---|---|---|
-| 1 | Delivery deadline and submission channel (Moodle? zip vs Git link?) | Professors / Moodle | Yes, for scheduling |
-| 2 | Group composition: same as TP1 (Arthur Fernandes, Bruno Lima, Felipe Augusto)? Anyone joining? | Bruno | No (affects report cover and README) |
-| 3 | If delivering as a Git repo, must it be public, or shared with the professors' GitHub accounts? (Repo is private now) | Professors | No, until delivery |
-| 4 | Report in Overleaf (as TP1?) or local LaTeX? Any template required? | Bruno / group | No |
-| 5 | Is a single combined evaluation counter acceptable for incremental evaluation (each incremental Δ-evaluation counts 1)? Statement §3 implies yes: "isso não altera a contagem de avaliações". | Statement (already answered: yes) | No |
+| 1 | Submission channel (Moodle?). Deadline known: 2026-10-18; format decided: zip | Professors / Moodle | No (needed on 18/10) |
+| 2 | Does Felipe Augusto join TP2? (Bruno and Arthur confirmed) | Bruno | No (affects report cover and README) |
+| 3 | Is there a required report template? (Workflow decided: local TeX → Overleaf) | Professors | No |
+| 4 | Is a single combined evaluation counter acceptable for incremental evaluation (each incremental Δ-evaluation counts 1)? Statement §3 implies yes: "isso não altera a contagem de avaliações". | Statement (already answered: yes) | No |
 
 ## 10. Sources
 

@@ -1,6 +1,6 @@
 # tp2-fundia
 
-> **TL;DR:** Trabalho Prático 2 de *Fundamentos de Inteligência Artificial* (UFMG). Compares Greedy Descent with Random Restart, Simulated Annealing and a Genetic Algorithm on asset-maintenance sequencing (weighted tardiness), with three instances (n = 12, 50, 150) under a fixed evaluation budget. **Phase 0 — bootstrap done; plan under review, no code yet.**
+> **TL;DR:** Trabalho Prático 2 de *Fundamentos de Inteligência Artificial* (UFMG). Compares Greedy Descent with Random Restart, Simulated Annealing and a Genetic Algorithm on asset-maintenance sequencing (weighted tardiness), with three instances (n = 12, 50, 150) under a fixed evaluation budget. **Phase 1 — build (missions M1–M9, schedule in `IMPLEMENTATION_PLAN.md` §11). Delivery: 2026-10-18.**
 
 This is a **self-managed project**: all working state lives in versioned markdown in this repo. Agents and humans resume from the docs below without a handoff call. Protocol: [`.agents-skills/.agents/skills/self-managed-project/SKILL.md`](.agents-skills/.agents/skills/self-managed-project/SKILL.md).
 
