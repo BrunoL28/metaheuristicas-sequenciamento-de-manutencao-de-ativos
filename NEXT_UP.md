@@ -14,11 +14,11 @@ _Last updated: 2026-10-14_
 ## 🟡 In progress
 
 - [ ] **M0** Delivery plan: PR #1 (`docs/plano-entrega`), awaiting Bruno's review.
-- [ ] **M1** Foundation + fitness: PR (`feat/fundacao-fitness`, stacked on M0), awaiting review.
+- [ ] **M1** Foundation + fitness: PR #2 (`feat/fundacao-fitness`, stacked on #1), CI green, awaiting review.
+- [ ] **M2** Interface + counter + neighborhoods: PR (`feat/vizinhancas`, stacked on #2), awaiting review.
 
 ## 🟢 This week / next
 
-- [ ] 14–15/10 **M2** Interface + counter + neighborhoods + incremental evaluation (`feat/vizinhancas`).
 - [ ] 15/10 **M3** Greedy descent (3 variants) + runner + T2 (`feat/busca-local-t2`).
 - [ ] 15/10 **M4** Simulated annealing + calibration (`feat/simulated-annealing`).
 - [ ] 15–16/10 **M5** Genetic algorithm (`feat/algoritmo-genetico`).
@@ -39,6 +39,7 @@ _Last updated: 2026-10-14_
 
 ## ✅ Recently done (last 2 weeks)
 
+- 2026-10-14 — M2: `Problem` protocol, `CountingProblem` (exact budget, best-so-far trace), swap/insertion/2-opt with incremental evaluation, AST architecture test, timing script. 56 tests green. Incremental gain measured at 1.1–1.4× (plan §1).
 - 2026-10-14 — M1: `uv` project (hatchling), Makefile (`setup test lint verify`), CI workflow, instance loader, h, constructive baselines and an exact DP for n = 12. 15 tests green; `make verify` confirms 4366, **h* = 1875 computed exactly**, greedy 3168, NN 2590, Fig. 1 39/22.
 - 2026-10-14 — Delivery plan approved: deadline 18/10, missions M0–M9, Git flow with PRs, local TeX → Overleaf, clean-zip delivery. Arthur invited to the repo. Decisions recorded in `CONTEXT.md` §8 and plan §3/§7/§10/§11.
 - 2026-10-14 — Bootstrap: private repo `BrunoL28/tp2-fundia`, canonical files, agents-skills submodule. Prompt-injection audit of all 6 inputs → all **NÃO** (`archive/input-audits/2026-10-14-injection-audit.md`). `CONTEXT.md` distilled from the statement and slides. Plan rev 1 drafted. Verified in scratch: h(identity) = 4366, Σp, toy coordinates reconstructed (39/22), greedy-3168 tie-break identified, eval speed benchmarked. QA: fresh `gh repo clone … --recurse-submodules` has every canonical file and folder, and resolves `.agents/skills/self-managed-project/SKILL.md` and `prompt-injection-audit/SKILL.md` ✅
