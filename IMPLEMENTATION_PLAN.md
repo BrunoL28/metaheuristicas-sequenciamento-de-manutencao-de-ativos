@@ -14,11 +14,11 @@
 
 | # | Component | Status | Tested? | Notes |
 |---|---|---|---|---|
-| C0 | Project scaffolding (`pyproject.toml`, `uv.lock`, `Makefile`, package layout) | ⬜ Not started | — | |
+| C0 | Project scaffolding (`pyproject.toml`, `uv.lock`, `Makefile`, package layout) | 🟡 In progress | `uv sync --locked`, ruff, pytest green; CI workflow `.github/workflows/ci.yml` | M1: hatchling backend (local uv 0.6.12 predates `uv_build`); Makefile has `setup test lint verify`, the other targets land with their missions |
 | C1 | `Problem` interface + `Move` type | ⬜ Not started | — | `src/tp2/core/interface.py` |
 | C2 | `CountingProblem` (budget, counter, best-so-far trace) | ⬜ Not started | — | single counting point (§3, §6 "Cuidado com a contagem") |
-| C3 | Instance loader | ⬜ Not started | — | |
-| C4 | `MaintenanceProblem` — full fitness h | ⬜ Not started | — | must give 4366 / 39 / 22 |
+| C3 | Instance loader | ✅ Done (M1) | n, Σp, base, symmetric T, no .5 ties (`tests/test_instance.py`) | `src/tp2/problem/instance.py` |
+| C4 | `MaintenanceProblem` — full fitness h | ✅ Done (M1) | 4366, toy 39/22 + C_j of Fig. 1, unique optimum 22, prefix monotonicity (`tests/test_fitness.py`) | `src/tp2/problem/maintenance.py`; baselines in `heuristicas.py` (greedy 3168, NN 2590); exact DP in `exato.py` |
 | C5 | Neighborhoods: swap / insertion / 2-opt (+ incremental evaluation) | ⬜ Not started | — | |
 | C6 | Crossover (OX; PMX deferred) + mutation operators | ⬜ Not started | — | |
 | C7 | Greedy descent + random restart (3 variants) | ⬜ Not started | — | |
@@ -26,7 +26,7 @@
 | C9 | Genetic algorithm (+ diversity logging) | ⬜ Not started | — | |
 | C10 | Experiment runner (parallel, seeded, CSV) | ⬜ Not started | — | |
 | C11 | Analysis: stats tables, boxplots, convergence, acceptance, diversity | ⬜ Not started | — | |
-| C12 | `verify` command (T1 output for the report) | ⬜ Not started | — | |
+| C12 | `verify` command (T1 output for the report) | ✅ Done (M1) | `make verify` exits 0; output in `results/verify.txt` | Computes h* = 1875 by exact DP instead of only quoting it |
 | C13 | Extra experiment: does crossover help? | ⬜ Not started | — | |
 | C14 | Report (`relatorio/`, LaTeX) | ⬜ Not started | — | |
 | C15 | Delivery packaging (README reproduction table, zip) | ⬜ Not started | — | |
@@ -36,6 +36,7 @@
 - Σp = 55 / 239 / 684 ✅ (matches statement §1.3 table).
 - Fig. 1 toy instance reconstructed: base (0,0), 1=(3,4), 2=(6,0), 3=(0,8), 4=(6,8) (p, d, w from the figure). h(1,4,2,3) = **39**, unique optimum (1,4,3,2) = **22** ✅.
 - Statement's greedy value **3168** is reproduced only with the rule "min immediate tardiness increment; tie → min travel time; tie → lowest index". Nearest-neighbour gives **2590**.
+- **h* = 1875 confirmed independently** (M1): an exact DP over (visited set, last asset) with Pareto labels (C, h) finds the optimum (5, 4, 1, 6, 7, 2, 8, 12, 3, 10, 9, 11) in < 1 s. It's valid because future cost never decreases as C grows, so (C, h) labels dominate componentwise.
 - Pure-Python full evaluation with a precomputed integer travel matrix: **~15 µs/eval at n = 150**, so 300k evals ≈ 4.5 s/run (16 cores available). Compute is not a constraint.
 
 ### Bug log
@@ -676,12 +677,13 @@ Delivery schedule approved 2026-10-14 (deadline **2026-10-18**). Each mission is
 
 | Test | Input | Expected output | Result |
 |---|---|---|---|
-| Fitness identity | pequena, π = (1..12) | 4366 | ⬜ (scratch ✅) |
-| Toy greedy route | toy4, (1,4,2,3) | 39; C = (7,16,27,38) | ⬜ (scratch ✅) |
-| Toy optimum | toy4, brute force | min 22 at (1,4,3,2), unique | ⬜ (scratch ✅) |
-| Σp per instance | 3 files | 55 / 239 / 684 | ⬜ (scratch ✅) |
-| Statement greedy | pequena, min-increment, tie → travel | 3168 | ⬜ (scratch ✅) |
-| Nearest neighbour | pequena | 2590 | ⬜ (scratch ✅) |
+| Fitness identity | pequena, π = (1..12) | 4366 | ✅ |
+| Toy greedy route | toy4, (1,4,2,3) | 39; C = (7,16,27,38) | ✅ |
+| Toy optimum | toy4, brute force | min 22 at (1,4,3,2), unique | ✅ |
+| Exact optimum (DP) | pequena; toy4 | 1875; 22 at (1,4,3,2) | ✅ |
+| Σp per instance | 3 files | 55 / 239 / 684 | ✅ |
+| Statement greedy | pequena, min-increment, tie → travel | 3168 | ✅ |
+| Nearest neighbour | pequena | 2590 | ✅ |
 | Budget exactness | dummy problem, B = 100, 110 calls | 100 succeed, 101st raises | ⬜ |
 | Incremental == full | hypothesis, n ∈ [2, 30], all ops | equality on every move | ⬜ |
 | Neighborhood sizes | n = 12/50/150 | 66/1225/11175 (swap, 2-opt), 121/2401/22201 (insertion) | ⬜ |
