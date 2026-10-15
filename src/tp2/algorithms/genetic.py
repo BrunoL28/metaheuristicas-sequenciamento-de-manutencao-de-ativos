@@ -25,20 +25,22 @@ A variante só com mutação é ``padrao`` com ``Pc = 0``.
 
 Telemetria por geração (tabela ``ag_geracoes``): melhor h e h médio da
 população, número de permutações distintas e distância média entre pares
-sorteados (diversidade).
+sorteados (diversidade). O tempo gasto nela volta em ``s_telemetria``, para
+o runner descontá-lo do tempo de parede.
 """
 
 from __future__ import annotations
 
 import random
 import statistics
+import time
 
 from tp2.core.counting import BudgetExhausted
 from tp2.core.interface import Problem, Solution
 from tp2.core.recorder import Recorder
 
 VARIANTES = ("padrao", "headless")
-PARES_DIVERSIDADE = 200
+PARES_DIVERSIDADE = 50
 
 
 def algoritmo_genetico(
@@ -68,6 +70,7 @@ def algoritmo_genetico(
     geracao = 0
     avaliacoes = 0
     cruzamentos = mutacoes = 0
+    s_telemetria = 0.0
     pop: list[Solution] = []
     hs: list[int] = []
 
@@ -82,6 +85,8 @@ def algoritmo_genetico(
         return pop[melhor]
 
     def registrar() -> None:
+        nonlocal s_telemetria
+        inicio = time.perf_counter()
         pares = [rng_div.sample(range(N), 2) for _ in range(PARES_DIVERSIDADE)]
         rec.registrar(
             "ag_geracoes",
@@ -92,6 +97,7 @@ def algoritmo_genetico(
             distintos=len({tuple(s) for s in pop}),
             distancia_media=statistics.fmean(problema.distancia(pop[a], pop[b]) for a, b in pares),
         )
+        s_telemetria += time.perf_counter() - inicio
 
     try:
         for _ in range(N):
@@ -131,4 +137,5 @@ def algoritmo_genetico(
         "cruzamentos": cruzamentos,
         "mutacoes": mutacoes,
         "avaliacoes": avaliacoes,
+        "s_telemetria": s_telemetria,
     }

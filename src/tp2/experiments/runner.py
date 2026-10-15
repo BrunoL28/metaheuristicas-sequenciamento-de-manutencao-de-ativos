@@ -8,6 +8,10 @@ final, confere duas invariantes:
 - a melhor permutação, reavaliada por um problema novo (sem contador), tem
   o mesmo h registrado e é de fato uma permutação de 1..n.
 
+``wall_s`` é o tempo de parede da execução sem a telemetria que o algoritmo
+declara (``s_telemetria`` no resumo, hoje só no AG), para que o tempo
+comparado seja o da busca.
+
 Se algo falhar, a linha sai com ``status=error`` e o traceback vai para
 ``erros.txt``. As linhas são gravadas (com flush) assim que cada execução
 termina; ``--resume`` pula as execuções que já têm ``status=ok``.
@@ -181,7 +185,7 @@ def executar(job: dict) -> dict:
         "best_h": problema.best_h if best_s is not None else "",
         "ref_h": ref,
         "gap": round((problema.best_h - ref) / ref, 6) if best_s is not None else "",
-        "wall_s": round(wall, 3),
+        "wall_s": round(wall - resumo.get("s_telemetria", 0.0), 3),
         "params": json.dumps(job["params"], sort_keys=True),
         "best_perm": " ".join(map(str, best_s)) if best_s is not None else "",
         "git_commit": job.get("git_commit", ""),
