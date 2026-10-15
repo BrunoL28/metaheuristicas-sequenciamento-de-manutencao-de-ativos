@@ -79,6 +79,7 @@ Pré-requisitos: [`uv`](https://github.com/astral-sh/uv) e `make`. Primeiro `mak
 | Todas as tabelas e figuras do relatório (a partir de `results/LATEST_*`) | `make analysis` | `relatorio/tabelas/*.tex`, `relatorio/figuras/*.pdf`, `relatorio/melhores_solucoes.txt` |
 | Relatório em PDF (pdfLaTeX + latexmk) | `make report` | `relatorio/main.pdf` |
 | Pacote do relatório para upload no Overleaf | `make overleaf` | `tmp/relatorio-overleaf.zip` |
+| Pacote de entrega (código, resultados, relatório; sem arquivos de agente) | `make zip` | `entrega/tp2-fundia-<data>.zip` (o README do pacote é `README_ENTREGA.md`) |
 
 _Rows for tables and figures are added as the missions land (plan C15)._
 

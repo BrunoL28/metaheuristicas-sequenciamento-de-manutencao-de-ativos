@@ -29,7 +29,7 @@ trap 'rm -rf "$temporario"' EXIT
 destino="$temporario/$nome"
 mkdir -p "$destino"
 
-git ls-files -z -- "${CAMINHOS[@]}" | xargs -0 cp --parents -t "$destino"
+git ls-files -z -- "${CAMINHOS[@]}" | grep -zv "\.gitkeep$" | xargs -0 cp --parents -t "$destino"
 cp README_ENTREGA.md "$destino/README.md"
 cp relatorio/main.pdf "$destino/relatorio/main.pdf"
 

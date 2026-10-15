@@ -12,11 +12,10 @@ _Last updated: 2026-10-15_
 
 ## 🟡 In progress
 
-- [ ] **M8** Report draft: PR (`docs/relatorio`), awaiting review. Group: read `relatorio/main.pdf` (`make report`), confirm Felipe (cover); length is fine (body ≈ 7 pages, Bruno accepts 5 + 1–2); then upload `make overleaf` to Overleaf.
+- [ ] **M9** Delivery: PR (`chore/entrega`), awaiting review. Then: final group read of `relatorio/main.pdf`, `make zip`, submit the zip + PDF (channel to confirm). Felipe still pending for the cover.
 
 ## 🟢 This week / next
 
-- [ ] 17/10 **M9** Delivery README + clean zip (`chore/entrega`).
 - [ ] Confirm whether Felipe Augusto joins the group (report cover, README).
 - [ ] Confirm the submission channel (Moodle?).
 
@@ -28,6 +27,8 @@ _Last updated: 2026-10-15_
 
 ## ✅ Recently done (last 2 weeks)
 
+- 2026-10-15 — M9: `README_ENTREGA.md` + `make zip` (allowlist, ≈ 15 MB). Clean-room check outside the repo: setup/test/verify OK, T3 rerun identical (350/350 runs and curves), tables and figures identical after sorting the boxplot inputs.
+- 2026-10-15 — PR #9 (M8 report) merged; student IDs on the cover.
 - 2026-10-15 — M8 draft: full report in PT-BR (`relatorio/`), 11 pages (body ≈ 7), compiled locally with TeX Live; new generated inputs `ox_exemplo.tex`, `extra_vs_buscas.tex`, `verify.txt` (memetic GA ties both local searches: p_Holm = 1.000). `make report`, `make overleaf`.
 - 2026-10-15 — PRs #7–#8 (M6–M7) merged by Bruno; TeX Live installed.
 - 2026-10-15 — M7: `make analysis` → 11 LaTeX tables + 6 figures + best solutions, from `results/LATEST_*`. GD-random and SA are statistically tied everywhere and both beat the GA; only the memetic arm beats GA-OX; the SA calibration cost is not significant. 114 tests green.
