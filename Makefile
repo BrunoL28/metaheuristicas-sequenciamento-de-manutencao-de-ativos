@@ -1,4 +1,4 @@
-.PHONY: setup test lint verify t2 calibrate sa-piloto ag-piloto ag-ajuste ox-demo memetico-ajuste experiments extra robustez tempos analysis tables figures report overleaf
+.PHONY: setup test lint verify t2 calibrate sa-piloto ag-piloto ag-ajuste ox-demo memetico-ajuste experiments extra robustez tempos analysis tables figures report overleaf zip
 
 export MPLBACKEND = Agg
 
@@ -109,3 +109,7 @@ ox-demo:
 	@echo "Exemplo passo a passo do cruzamento OX (para o relatório)..."
 	@mkdir -p results
 	uv run python -m tp2.problem.operators --demo --n 8 --seed 15 | tee results/ox_demo.txt
+
+zip: report
+	@echo "Montando o pacote de entrega (código, resultados e relatório)..."
+	bash scripts/make_zip.sh

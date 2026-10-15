@@ -10,11 +10,11 @@
 
 ## 1. Current Implementation Status
 
-**Phase:** Phase 1 — build. Plan rev 1 and the delivery schedule (§11) approved 2026-10-14. M0–M2 merged 2026-10-14; M3 (greedy descent + runner + T2) in review (PR #4); M4 (SA) in review (PR #5, stacked on #4); M3–M5 merged 2026-10-15. M0–M7 merged by 2026-10-15. M8 (report draft) in review; M9 pending.
+**Phase:** Phase 1 — build. Plan rev 1 and the delivery schedule (§11) approved 2026-10-14. M0–M2 merged 2026-10-14; M3 (greedy descent + runner + T2) in review (PR #4); M4 (SA) in review (PR #5, stacked on #4); M3–M5 merged 2026-10-15. M0–M8 merged by 2026-10-15. M9 (delivery package) in review; then the group's final review and submission (18/10).
 
 | # | Component | Status | Tested? | Notes |
 |---|---|---|---|---|
-| C0 | Project scaffolding (`pyproject.toml`, `uv.lock`, `Makefile`, package layout) | 🟡 In progress | `uv sync --locked`, ruff, pytest green; CI workflow `.github/workflows/ci.yml` | M1: hatchling backend (local uv 0.6.12 predates `uv_build`); Makefile has `setup test lint verify t2 calibrate sa-piloto ag-piloto ag-ajuste ox-demo memetico-ajuste experiments extra robustez tempos analysis report overleaf`, the other targets land with their missions |
+| C0 | Project scaffolding (`pyproject.toml`, `uv.lock`, `Makefile`, package layout) | 🟡 In progress | `uv sync --locked`, ruff, pytest green; CI workflow `.github/workflows/ci.yml` | M1: hatchling backend (local uv 0.6.12 predates `uv_build`); Makefile has `setup test lint verify t2 calibrate sa-piloto ag-piloto ag-ajuste ox-demo memetico-ajuste experiments extra robustez tempos analysis report overleaf zip`, the other targets land with their missions |
 | C1 | `Problem` interface + `Move` type | ✅ Done (M2) | Exercised through C2/C5 tests | `src/tp2/core/interface.py`; AST test `tests/test_arquitetura.py` forbids `tp2.problem` imports in `tp2/algorithms` (checked to fail on a planted import) |
 | C2 | `CountingProblem` (budget, counter, best-so-far trace) | ✅ Done (M2) | B calls succeed and B+1 raises; mid-scan stop; `best_s` re-evaluates to `best_h`; non-evaluating methods don't count (`tests/test_counting.py`) | Stores only improvement events `(evals, best_h)`; the runner writes them to `curvas.csv`; any fixed grid (e.g. 201 points) is derived in C11 |
 | C3 | Instance loader | ✅ Done (M1) | n, Σp, base, symmetric T, no .5 ties (`tests/test_instance.py`) | `src/tp2/problem/instance.py` |
@@ -29,7 +29,7 @@
 | C12 | `verify` command (T1 output for the report) | ✅ Done (M1) | `make verify` exits 0; output in `results/verify.txt` | Computes h* = 1875 by exact DP instead of only quoting it |
 | C13 | Extra experiment: does crossover help? | ✅ Run (M6) | PMX worked example + hypothesis properties; memetic GA exact budget (`tests/test_suites.py`) | `make extra` → `results/2026-10-15_extra/`: GA-OX, mutation-only (Pc = 0), headless chicken, GA-PMX and memetic GA (p_ls = 0.1). Statistical tests in M7 |
 | C14 | Report (`relatorio/`, LaTeX) | 🟡 Draft done (M8), group review | Compiles with TeX Live 2023 (`make report`): 0 undefined refs/citations, one 0.9 pt overfull line | `relatorio/main.tex` + `secoes/*.tex` (one sentence per line) + `referencias.bib` (10 entries, none invented) + `apalike-pt.bst` (apalike with PT connectors). 10 pt, 2 cm margins: body ≈ 7 pages + references + appendices (11 pages total). Every number comes from `relatorio/tabelas/` or the plan §1 facts; prose checked with humanize-text `ai_tells.py`. Overleaf: `make overleaf` → upload |
-| C15 | Delivery packaging (README reproduction table, zip) | ⬜ Not started | — | |
+| C15 | Delivery packaging (README reproduction table, zip) | ✅ Done (M9) | Clean room (zip unpacked outside the repo, no git): `make setup test verify` OK, 114 tests; `make experiments` into a new folder reproduces all 350 T3 runs (best_h, best_perm, evals, seed) and the improvement curves exactly; `make analysis` regenerates identical tables and figures; no agent file and no Claude/Anthropic mention in the package | `README_ENTREGA.md` (becomes the package README), `scripts/make_zip.sh` + `make zip` → `entrega/tp2-fundia-<date>.zip` (≈ 15 MB): allowlist of tracked paths + `relatorio/main.pdf`; fails on uncommitted changes or files outside the list |
 
 **Facts already verified (scratch scripts, 2026-10-14, not yet in the repo):**
 - h(identity) on `manutencao_pequena.txt` = **4366** ✅ (matches statement §1.4).

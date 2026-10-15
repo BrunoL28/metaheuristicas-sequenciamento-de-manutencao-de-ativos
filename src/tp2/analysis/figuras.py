@@ -92,7 +92,11 @@ def _boxplots(grupos, ordem, arquivo: Path, log=False, referencias=True, rotulos
 
 
 def _grupos(linhas):
-    return {k: dados.melhores(g) for k, g in dados.agrupar(linhas, "instancia", "config").items()}
+    # Ordenado para o PDF não depender da ordem em que as execuções terminaram.
+    return {
+        k: sorted(dados.melhores(g))
+        for k, g in dados.agrupar(linhas, "instancia", "config").items()
+    }
 
 
 def boxplots(t3, saida: Path) -> Path:
