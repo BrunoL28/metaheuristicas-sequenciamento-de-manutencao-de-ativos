@@ -13,11 +13,11 @@ _Last updated: 2026-10-15_
 
 ## 🟡 In progress
 
-- [ ] **M6** T3 + extra + robustness: PR (`exp/t3-extra`), awaiting review. Group: confirm GD-`random` as algorithm (A) and the memetic design (CONTEXT §8).
+- [ ] **M6** T3 + extra + robustness: PR #7 (`exp/t3-extra`), CI green, awaiting review. Group: confirm GD-`random` as algorithm (A) and the memetic design (CONTEXT §8).
+- [ ] **M7** Analysis: PR (`feat/analise`, stacked on #7), awaiting review. Group: review the numbers before the report (plan §1, "Statistics").
 
 ## 🟢 This week / next
 
-- [ ] 16/10 **M7** Analysis: tables and figures (`feat/analise`).
 - [ ] 17/10 **M8** Report (`docs/relatorio`).
 - [ ] 17/10 **M9** Delivery README + clean zip (`chore/entrega`).
 - [ ] Confirm whether Felipe Augusto joins the group (report cover, README).
@@ -31,6 +31,7 @@ _Last updated: 2026-10-15_
 
 ## ✅ Recently done (last 2 weeks)
 
+- 2026-10-15 — M7: `make analysis` → 11 LaTeX tables + 6 figures + best solutions, from `results/LATEST_*`. GD-random and SA are statistically tied everywhere and both beat the GA; only the memetic arm beats GA-OX; the SA calibration cost is not significant. 114 tests green.
 - 2026-10-15 — M6 (+ V2 items pulled forward): PMX, memetic GA, suites `t3`, `extra`, `robustez`, `tempos`; all runs ok from commit `7bd25eb`. SA has the best median on media and grande; GD-`random` is algorithm (A); three algorithms beat the media reference 16 332 (best 16 234, memetic GA); the GA stagnates on media (no improvement after 150k in 30/30 runs). 108 tests green.
 - 2026-10-15 — PRs #4–#6 (M3–M5) merged by Bruno.
 - 2026-10-15 — M5: OX (slide convention, `make ox-demo`), insertion mutation, GA (tournament, Pc, Pm, elitism, `headless` variant for the extra experiment), per-generation diversity log. Pilots: GA is the weakest so far (median 1 937 / 18 610 / 97 014) and loses diversity early; the N/Pm pilot on media kept the defaults. 100 tests green.

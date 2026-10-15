@@ -76,6 +76,7 @@ Pré-requisitos: [`uv`](https://github.com/astral-sh/uv) e `make`. Primeiro `mak
 | Experimento extra — AG com OX, só mutação, headless chicken, PMX e memético | `make extra` | `results/<data>_extra/`; `results/LATEST_EXTRA` |
 | Robustez — SA sem as avaliações da calibração; os três algoritmos com 2B | `make robustez` | `results/<data>_robustez/`; `results/LATEST_ROBUSTEZ` |
 | Tempos sem carga paralela (3 execuções por célula, 1 processo) | `make tempos` | `results/<data>_tempos/`; `results/LATEST_TEMPOS` |
+| Todas as tabelas e figuras do relatório (a partir de `results/LATEST_*`) | `make analysis` | `relatorio/tabelas/*.tex`, `relatorio/figuras/*.pdf`, `relatorio/melhores_solucoes.txt` |
 
 _Rows for tables and figures are added as the missions land (plan C15)._
 

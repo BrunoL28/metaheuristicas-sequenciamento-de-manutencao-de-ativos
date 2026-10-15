@@ -1,4 +1,4 @@
-.PHONY: setup test lint verify t2 calibrate sa-piloto ag-piloto ag-ajuste ox-demo memetico-ajuste experiments extra robustez tempos
+.PHONY: setup test lint verify t2 calibrate sa-piloto ag-piloto ag-ajuste ox-demo memetico-ajuste experiments extra robustez tempos analysis tables figures
 
 export MPLBACKEND = Agg
 
@@ -87,6 +87,12 @@ tempos: verify
 	uv run python -m tp2.experiments.runner --suite tempos --max-execucoes 3 --jobs 1 --out $(TEMPOS_OUT)
 	uv run python -m tp2.experiments.resumo $(TEMPOS_OUT) | tee $(TEMPOS_OUT)/resumo.txt
 	@echo $(notdir $(TEMPOS_OUT)) > results/LATEST_TEMPOS
+
+analysis:
+	@echo "Gerando tabelas e figuras do relatório a partir de results/LATEST_*..."
+	uv run python -m tp2.analysis
+
+tables figures: analysis
 
 ox-demo:
 	@echo "Exemplo passo a passo do cruzamento OX (para o relatório)..."
