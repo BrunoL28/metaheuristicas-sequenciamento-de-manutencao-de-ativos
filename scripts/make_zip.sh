@@ -2,10 +2,10 @@
 # Monta o pacote de entrega em entrega/tp2-fundia-<data>.zip.
 #
 # Entram só os arquivos versionados de uma lista fixa (código, testes,
-# instâncias, configurações, resultados e relatório), mais o PDF compilado do
-# relatório. README_ENTREGA.md vira o README.md do pacote. O script falha se
-# houver mudanças não commitadas nesses caminhos, se o PDF não existir ou se
-# algum arquivo de fora da lista aparecer no pacote.
+# instâncias, configurações, resultados e relatório, com o PDF compilado).
+# README_ENTREGA.md vira o README.md do pacote. O script falha se houver
+# mudanças não commitadas nesses caminhos, se o PDF não estiver versionado ou
+# se algum arquivo de fora da lista aparecer no pacote.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -18,8 +18,8 @@ if [ -n "$(git status --porcelain -- "${CAMINHOS[@]}" README_ENTREGA.md)" ]; the
     git status --short -- "${CAMINHOS[@]}" README_ENTREGA.md >&2
     exit 1
 fi
-if [ ! -f relatorio/main.pdf ]; then
-    echo "relatorio/main.pdf não existe; rode make report." >&2
+if ! git ls-files --error-unmatch relatorio/main.pdf >/dev/null 2>&1; then
+    echo "relatorio/main.pdf não está versionado; rode make report e faça o commit." >&2
     exit 1
 fi
 
@@ -31,7 +31,6 @@ mkdir -p "$destino"
 
 git ls-files -z -- "${CAMINHOS[@]}" | grep -zv "\.gitkeep$" | xargs -0 cp --parents -t "$destino"
 cp README_ENTREGA.md "$destino/README.md"
-cp relatorio/main.pdf "$destino/relatorio/main.pdf"
 
 if (cd "$temporario" && find "$nome" -type f) | grep -E "$PROIBIDOS"; then
     echo "Arquivos que não deveriam estar no pacote (acima)." >&2

@@ -103,6 +103,7 @@ overleaf:
 	@mkdir -p tmp
 	@git diff --quiet HEAD -- relatorio || echo "Aviso: relatorio/ tem mudanças não commitadas; o zip usa o último commit."
 	git archive --format=zip -o tmp/relatorio-overleaf.zip HEAD:relatorio
+	@zip -dq tmp/relatorio-overleaf.zip main.pdf || true
 	@echo "Pronto: tmp/relatorio-overleaf.zip (Overleaf: New Project > Upload Project)"
 
 ox-demo:

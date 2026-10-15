@@ -12,7 +12,7 @@ _Last updated: 2026-10-15_
 
 ## 🟡 In progress
 
-- [ ] **M9** Delivery: PR (`chore/entrega`), awaiting review. Then: final group read of `relatorio/main.pdf`, `make zip`, submit the zip + PDF (channel to confirm). Felipe still pending for the cover.
+- [ ] **Delivery:** M9 merged (PR #10). `relatorio/main.pdf` is now versioned (PR `docs/pdf-relatorio`; the build is byte-reproducible via `SOURCE_DATE_EPOCH` in `relatorio/latexmkrc`): after any report change, `make report` and commit the PDF. Then: final group read, `make zip` on main, submit the zip + PDF (channel to confirm). Felipe still pending for the cover.
 
 ## 🟢 This week / next
 
