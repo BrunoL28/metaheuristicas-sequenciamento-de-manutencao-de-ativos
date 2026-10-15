@@ -1,0 +1,37 @@
+{
+  "suite": "ag_piloto",
+  "data": "2026-10-15T01:50:56",
+  "git_commit": "7c62b1c",
+  "base_seed": 20261014,
+  "regra_seed": "base_seed + 1000 * indice_instancia + run",
+  "instancias": [
+    "pequena",
+    "media",
+    "grande"
+  ],
+  "orcamento": {
+    "pequena": 50000,
+    "media": 150000,
+    "grande": 300000
+  },
+  "execucoes": {
+    "pequena": 3,
+    "media": 3,
+    "grande": 3
+  },
+  "celulas": [
+    {
+      "algoritmo": "ag",
+      "variante": "padrao",
+      "vizinhanca": "insertion",
+      "rotulo": "",
+      "params": {}
+    }
+  ],
+  "total_execucoes": 9,
+  "processos": 15,
+  "python": "3.12.3",
+  "plataforma": "Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "processador": "x86_64",
+  "cpus": 16
+}

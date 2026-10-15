@@ -1,0 +1,7 @@
+Pai 1: (4 1 5 7 2 6 3 8)
+Pai 2: (3 7 6 8 2 1 4 5)
+1. Cortes nas posições 3 e 6 (contando de 1): bloco do pai 1 = (5 7 2 6)
+2. Copia o bloco nas mesmas posições: (_ _ 5 7 2 6 _ _)
+3. Genes do pai 2 que faltam, na ordem do pai 2: (3 8 1 4)
+4. Preenche as posições livres da esquerda para a direita: (3 8 5 7 2 6 1 4)
+Segundo filho (papéis trocados): (4 5 6 8 2 1 7 3)

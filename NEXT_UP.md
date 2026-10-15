@@ -14,11 +14,11 @@ _Last updated: 2026-10-15_
 ## 🟡 In progress
 
 - [ ] **M3** Greedy descent + runner + T2: PR #4 (`feat/busca-local-t2`), CI green, awaiting review. Group: confirm the insertion choice (CONTEXT §8).
-- [ ] **M4** Simulated annealing + calibration: PR (`feat/simulated-annealing`, stacked on #4), awaiting review. Group: confirm the calibration change (CONTEXT §8).
+- [ ] **M4** Simulated annealing + calibration: PR #5 (`feat/simulated-annealing`, stacked on #4), CI green, awaiting review. Group: confirm the calibration change (CONTEXT §8).
+- [ ] **M5** Genetic algorithm: PR (`feat/algoritmo-genetico`, stacked on #5), awaiting review. Group: confirm the GA parameters (CONTEXT §8).
 
 ## 🟢 This week / next
 
-- [ ] 15–16/10 **M5** Genetic algorithm (`feat/algoritmo-genetico`).
 - [ ] 16/10 **M6** T3 + extra experiments (`exp/t3-extra`).
 - [ ] 16/10 **M7** Analysis: tables and figures (`feat/analise`).
 - [ ] 17/10 **M8** Report (`docs/relatorio`).
@@ -36,6 +36,7 @@ _Last updated: 2026-10-15_
 
 ## ✅ Recently done (last 2 weeks)
 
+- 2026-10-15 — M5: OX (slide convention, `make ox-demo`), insertion mutation, GA (tournament, Pc, Pm, elitism, `headless` variant for the extra experiment), per-generation diversity log. Pilots: GA is the weakest so far (median 1 937 / 18 610 / 97 014) and loses diversity early; the N/Pm pilot on media kept the defaults. 100 tests green.
 - 2026-10-15 — M4: SA (Gibbs acceptance, geometric levels, α from B), windowed acceptance log, `make calibrate` → `configs/sa_*.json` (4 000 evaluations per instance), `make sa-piloto` → `results/2026-10-15_sa_piloto/`: acceptance 0.87 → 0.002–0.006 on all 3 instances. Tf rule changed to the q10 of random-start worsenings (CONTEXT §8). 86 tests green.
 - 2026-10-15 — M3: greedy descent + random restart (best / first / random with K = |N|), `Recorder`, parallel runner (seeds, append CSV, `--resume`, evals == B and re-evaluated best checks), `make t2`. T2 run → `results/2026-10-15_t2/` (210/210 ok): every neighborhood hits 1875 in 30/30 on pequena; **insertion** wins on media and grande and is adopted (CONTEXT §8). 75 tests green.
 - 2026-10-14 — PRs #1–#3 (M0–M2) merged by Bruno.

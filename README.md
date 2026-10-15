@@ -68,6 +68,9 @@ Pré-requisitos: [`uv`](https://github.com/astral-sh/uv) e `make`. Primeiro `mak
 | T2 — comparação das vizinhanças (greedy descent, first improvement) e tempo por movimento | `make t2` | `results/<data>_t2/` (`runs.csv`, `otimos_locais.csv`, `curvas.csv`, `tempo_movimentos.csv`, `resumo.txt`); pasta atual em `results/LATEST_T2` |
 | Calibração do SA (T0, Tf, L, α por instância) | `make calibrate` | `configs/sa_<instância>.json`, `configs/sa_calibracao.txt` |
 | Piloto do SA: perfil de aceitação de pioras (3 execuções por instância) | `make sa-piloto` | `results/<data>_sa_piloto/` (`sa_aceitacao.csv`, `resumo.txt`) |
+| Exemplo passo a passo do cruzamento OX | `make ox-demo` | `results/ox_demo.txt` |
+| Piloto do AG: convergência e diversidade (3 execuções por instância) | `make ag-piloto` | `results/<data>_ag_piloto/` (`ag_geracoes.csv`, `resumo.txt`) |
+| Ajuste do AG na média (N e Pm, sementes fora do protocolo) | `make ag-ajuste` | `results/<data>_ag_ajuste/` |
 
 _Rows for tables and figures are added as the missions land (plan C15)._
 
