@@ -22,7 +22,7 @@ Read in this order:
 | Tasks | `make` | One target per table and figure (see plan §9 C0) |
 | Tests | `pytest` + `hypothesis` | Fitness checks (4366, 39/22), budget exactness, incremental == full |
 | Analysis | `pandas`, `scipy` (Mann–Whitney), `matplotlib` | Generates `relatorio/tabelas/*.tex` and `relatorio/figuras/*.pdf` |
-| Report | LaTeX (`relatorio/`) | Overleaf vs local TeX: pending decision (plan Known Holes #4) |
+| Report | LaTeX (`relatorio/`) | Local TeX Live while writing, then export to Overleaf |
 
 ## Quick links
 
@@ -65,6 +65,7 @@ Pré-requisitos: [`uv`](https://github.com/astral-sh/uv) e `make`. Primeiro `mak
 |---|---|---|
 | Testes | `make test` | terminal |
 | T1 — verificação da função de avaliação (4366, h* = 1875, Figura 1) | `make verify` | `results/verify.txt` |
+| T2 — comparação das vizinhanças (greedy descent, first improvement) e tempo por movimento | `make t2` | `results/<data>_t2/` (`runs.csv`, `otimos_locais.csv`, `curvas.csv`, `tempo_movimentos.csv`, `resumo.txt`); pasta atual em `results/LATEST_T2` |
 
 _Rows for tables and figures are added as the missions land (plan C15)._
 
@@ -76,4 +77,4 @@ ln -s .agents-skills/.agents .agents
 mkdir -p .claude && ln -s ../.agents-skills/.agents/skills .claude/skills
 ```
 
-_Last updated: 2026-10-14_
+_Last updated: 2026-10-15_

@@ -1,0 +1,13 @@
+instância config               exec     mín   mediana     média     máx ≤ ref   passos  ót.loc distintos  s/exec
+----------------------------------------------------------------------------------------------------------------
+pequena   gd/first/2opt          30    1875    1875.0    1875.0    1875    30   3704.0   211.2      47.1     0.2
+pequena   gd/first/insertion     30    1875    1875.0    1875.0    1875    30   2411.9   137.1      16.9     0.2
+pequena   gd/first/swap          30    1875    1875.0    1875.0    1875    30   3451.0   217.0     112.8     0.1
+media     gd/first/2opt          30   16448   18468.0   18328.8   19343     0   2501.5    17.7      17.7     1.2
+media     gd/first/insertion     30   16379   17457.5   17480.9   18841     0   1646.5    10.3      10.3     1.1
+media     gd/first/swap          30   19510   24252.0   24312.8   27893     0   2178.0    16.5      16.5     1.1
+grande    gd/first/2opt          10   80660   89078.5   89280.6   96064     0   1789.2     2.5       2.5     5.9
+grande    gd/first/insertion     10   76808   82796.5   82133.8   88896     0   1394.2     1.4       1.4     5.7
+grande    gd/first/swap          10  135221  150118.0  150432.5  166403     0   1385.6     1.7       1.7     5.5
+
+≤ ref: execuções que atingiram ou superaram o valor de referência da Tabela 1. passos, ót.loc, distintos e s/exec são médias por execução.

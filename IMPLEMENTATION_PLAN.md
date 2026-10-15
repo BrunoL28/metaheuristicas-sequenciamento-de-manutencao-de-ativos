@@ -10,21 +10,21 @@
 
 ## 1. Current Implementation Status
 
-**Phase:** Phase 1 — build. Plan rev 1 and the delivery schedule (§11) approved 2026-10-14. Missions M1–M9 pending.
+**Phase:** Phase 1 — build. Plan rev 1 and the delivery schedule (§11) approved 2026-10-14. M0–M2 merged 2026-10-14; M3 (greedy descent + runner + T2) in review; M4–M9 pending.
 
 | # | Component | Status | Tested? | Notes |
 |---|---|---|---|---|
-| C0 | Project scaffolding (`pyproject.toml`, `uv.lock`, `Makefile`, package layout) | 🟡 In progress | `uv sync --locked`, ruff, pytest green; CI workflow `.github/workflows/ci.yml` | M1: hatchling backend (local uv 0.6.12 predates `uv_build`); Makefile has `setup test lint verify`, the other targets land with their missions |
+| C0 | Project scaffolding (`pyproject.toml`, `uv.lock`, `Makefile`, package layout) | 🟡 In progress | `uv sync --locked`, ruff, pytest green; CI workflow `.github/workflows/ci.yml` | M1: hatchling backend (local uv 0.6.12 predates `uv_build`); Makefile has `setup test lint verify t2`, the other targets land with their missions |
 | C1 | `Problem` interface + `Move` type | ✅ Done (M2) | Exercised through C2/C5 tests | `src/tp2/core/interface.py`; AST test `tests/test_arquitetura.py` forbids `tp2.problem` imports in `tp2/algorithms` (checked to fail on a planted import) |
-| C2 | `CountingProblem` (budget, counter, best-so-far trace) | ✅ Done (M2) | B calls succeed and B+1 raises; mid-scan stop; `best_s` re-evaluates to `best_h`; non-evaluating methods don't count (`tests/test_counting.py`) | Stores only improvement events `(evals, best_h)`; the 201-point grid is derived at write time (C10) |
+| C2 | `CountingProblem` (budget, counter, best-so-far trace) | ✅ Done (M2) | B calls succeed and B+1 raises; mid-scan stop; `best_s` re-evaluates to `best_h`; non-evaluating methods don't count (`tests/test_counting.py`) | Stores only improvement events `(evals, best_h)`; the runner writes them to `curvas.csv`; any fixed grid (e.g. 201 points) is derived in C11 |
 | C3 | Instance loader | ✅ Done (M1) | n, Σp, base, symmetric T, no .5 ties (`tests/test_instance.py`) | `src/tp2/problem/instance.py` |
 | C4 | `MaintenanceProblem` — full fitness h | ✅ Done (M1) | 4366, toy 39/22 + C_j of Fig. 1, unique optimum 22, prefix monotonicity (`tests/test_fitness.py`) | `src/tp2/problem/maintenance.py`; baselines in `heuristicas.py` (greedy 3168, NN 2590); exact DP in `exato.py` |
 | C5 | Neighborhoods: swap / insertion / 2-opt (+ incremental evaluation) | ✅ Done (M2) | Sizes, distinctness, Fig. 3 examples, hypothesis property incremental == full (150 random instances n ≤ 30), equality on pequena/media (`tests/test_neighborhoods.py`) | Incremental = rebuild only the suffix from the first touched position + evaluate from the cached prefix. Measured gain 1.1–1.4× (≤ 1.5× theoretical, since E[min(i,j)] ≈ n/3): see below |
 | C6 | Crossover (OX; PMX deferred) + mutation operators | ⬜ Not started | — | |
-| C7 | Greedy descent + random restart (3 variants) | ⬜ Not started | — | |
+| C7 | Greedy descent + random restart (3 variants) | ✅ Done (M3) | Exact budget for 3 variants × 3 neighborhoods; every complete `best`/`first` descent re-checked as a true local optimum; same seed → same trace; summary == telemetry (`tests/test_greedy_descent.py`) | `src/tp2/algorithms/greedy_descent.py`; per-descent telemetry (h, permutation signature, steps, complete or cut by budget) through `core/recorder.py` |
 | C8 | Simulated annealing + SA calibration script | ⬜ Not started | — | |
 | C9 | Genetic algorithm (+ diversity logging) | ⬜ Not started | — | |
-| C10 | Experiment runner (parallel, seeded, CSV) | ⬜ Not started | — | |
+| C10 | Experiment runner (parallel, seeded, CSV) | 🟡 Suite `t2` done (M3) | Seed rule, invariants, end-to-end run with interrupted `--resume` (`tests/test_runner.py`) | `src/tp2/experiments/{runner,configs,resumo}.py`. Suites `t3`/`extra` arrive with M4–M6 |
 | C11 | Analysis: stats tables, boxplots, convergence, acceptance, diversity | ⬜ Not started | — | |
 | C12 | `verify` command (T1 output for the report) | ✅ Done (M1) | `make verify` exits 0; output in `results/verify.txt` | Computes h* = 1875 by exact DP instead of only quoting it |
 | C13 | Extra experiment: does crossover help? | ⬜ Not started | — | |
@@ -36,7 +36,8 @@
 - Σp = 55 / 239 / 684 ✅ (matches statement §1.3 table).
 - Fig. 1 toy instance reconstructed: base (0,0), 1=(3,4), 2=(6,0), 3=(0,8), 4=(6,8) (p, d, w from the figure). h(1,4,2,3) = **39**, unique optimum (1,4,3,2) = **22** ✅.
 - Statement's greedy value **3168** is reproduced only with the rule "min immediate tardiness increment; tie → min travel time; tie → lowest index". Nearest-neighbour gives **2590**.
-- **Incremental evaluation timing** (M2, `python -m tp2.experiments.tempo_movimentos`, 20 solutions × 5000 random moves): µs per successor, full → incremental: pequena 1.3 → 1.1–1.25; media 5.0–5.3 → 3.5–4.1; grande 13.9–14.7 → 10.3–10.4 (gain 1.34× swap, 1.41× insertion, 1.43× 2-opt at n = 150). The definitive table is regenerated in M3 inside the T2 results folder.
+- **Incremental evaluation timing** (`python -m tp2.experiments.tempo_movimentos`, 20 solutions × 5000 random moves): gain 1.0–1.2× at n = 12, 1.25–1.33× at n = 50, 1.38–1.44× at n = 150 (≈ 10 µs per successor at n = 150 for all three operators). Definitive table: `results/2026-10-15_t2/tempo_movimentos.csv`.
+- **T2 (M3, `make t2` → `results/2026-10-15_t2/`, commit `a3be940`, 210/210 runs ok, 31 s on 15 processes):** first-improvement GD + RR. Pequena: all 3 neighborhoods reach h* = 1875 in 30/30 runs; distinct local optima per run: swap 112.8, 2-opt 47.1, insertion 16.9. Median best h — media: insertion 17 457.5, 2-opt 18 468, swap 24 252; grande: insertion 82 796.5, 2-opt 89 078.5, swap 150 118. At n = 150 a run completes only 1.4–2.5 descents (scale effect for the report). **Insertion adopted** for GD, SA and GA mutation (`configs.VIZINHANCA`, CONTEXT §8).
 - **h* = 1875 confirmed independently** (M1): an exact DP over (visited set, last asset) with Pareto labels (C, h) finds the optimum (5, 4, 1, 6, 7, 2, 8, 12, 3, 10, 9, 11) in < 1 s. It's valid because future cost never decreases as C grows, so (C, h) labels dominate componentwise.
 - Pure-Python full evaluation with a precomputed integer travel matrix: **~15 µs/eval at n = 150**, so 300k evals ≈ 4.5 s/run (16 cores available). Compute is not a constraint.
 
@@ -123,12 +124,12 @@ The three algorithms are deliberately different in how they spend evaluations. G
 - **Input:** 3 algorithms × 3 instances × runs (30/30/10), the T2-chosen neighborhood, GA params.
 - **Output (per results folder `results/<date>_t3/`):**
   - `runs.csv`: one row per run with the columns in C10.
-  - `curves.csv`: long format `run_id, evals, best_h` at a fixed grid of 201 checkpoints (0, B/200, …, B), plus the exact evaluation index of each improvement.
+  - `curvas.csv`: long format `run_id, evals, best_h`, one row per improvement of the best-so-far (exact evaluation index). The analysis derives any fixed grid (0, B/200, …, B) from it.
   - `ga_generations.csv`: `run_id, generation, evals, best_h, mean_h, distinct, mean_dist`.
   - `sa_acceptance.csv`: `run_id, window_end_evals, T, worse_proposed, worse_accepted, rate`.
   - `gd_local_optima.csv`: `run_id, variant, restart_idx, h_local_opt, perm_hash`.
   - `config.json`: all params, git commit, Python version, datetime, machine.
-- **Errors:** a crashed run is logged with `status=error` and the traceback in `errors.log`. The cell is re-run by `make experiments RESUME=1` (skips rows already present).
+- **Errors:** a crashed run is logged with `status=error` and the traceback in `erros.txt` (`*.log` is gitignored). The cell is re-run by `make experiments RESUME=1`, which keeps only `status=ok` rows and their telemetry and re-runs the rest.
 - **Scope:** no plotting. That's FR-5.
 
 ### FR-4 — Extra experiment: does recombination help? (§5 last bullet)
@@ -568,7 +569,7 @@ This project has no external services at runtime. The "integrations" are the loc
 
 - **Type:** `tp2/experiments/runner.py` + `configs.py`
 - **CLI:** `--suite {t2,t3,extra,pilot}`, `--seed`, `--jobs`, `--resume`, `--only ALG@INST` (debug), `--out results/<date>_<label>`.
-- **`runs.csv` columns:** `suite, algorithm, variant, neighborhood, instance, n, run, seed, budget, evals, best_h, gap (pequena only), wall_s, steps (GD), local_optima (GD), restarts (GD), T0, Tf, alpha, L (SA), N, Pc, Pm, k, elite (GA), generations (GA), best_perm (space-separated), git_commit, status`.
+- **`runs.csv` columns (as built in M3):** `run_id, suite, algoritmo, variante, vizinhanca, instancia, n, run, seed, orcamento, evals, best_h, ref_h, gap (vs Table 1 reference), wall_s, passos, descidas, otimos_locais, otimos_distintos (GD), params (JSON with the algorithm's parameters), best_perm (space-separated), git_commit, status`. SA/GA summary columns are added in M4/M5; each results folder keeps the header it was created with.
 - **Seeds:** `seed = BASE_SEED + 1000 * instance_idx + run`. All algorithms on the same instance and run index share the seed for `solucao_aleatoria`'s first draw. This doesn't make samples paired for the Mann–Whitney test (which is unpaired), but it removes one source of variance in the curves.
 - **Post-run assertions:** `evals == budget`; `h(best_perm)` recomputed by a fresh, uncounted `MaintenanceProblem` equals `best_h`.
 - **Wall time:** `time.perf_counter()` around `run()` only (excluding I/O). Machine info goes in `config.json`. Runs execute in parallel on separate processes, so per-run wall time is comparable across algorithms. We note that parallel load adds noise, and also time a sequential subset of 3 runs per cell for the time table (Known Holes #9).
@@ -692,8 +693,8 @@ Delivery schedule approved 2026-10-14 (deadline **2026-10-18**). Each mission is
 | OX slide example | P1 = (1,2,3,4,5), P2 = (5,4,2,1,3), block = positions 1..3 | (5,2,3,4,1) | ⬜ |
 | Permutation validity | hypothesis, OX/mutations | always a permutation of 1..n | ⬜ |
 | Architecture | AST of `tp2/algorithms/*.py` | no `tp2.problem` import | ✅ |
-| Run invariants | every T3 row | evals == B; fresh h(best_perm) == best_h | ⬜ |
-| Reproducibility | same seed, two runs | identical best_h and curve | ⬜ |
+| Run invariants | every T2/T3 row | evals == B; fresh h(best_perm) == best_h | ✅ T2 (210/210); T3 ⬜ |
+| Reproducibility | same seed, two runs | identical best_h and curve | ✅ (test + T2 rerun identical) |
 
 ### B. AI test prompts
 
