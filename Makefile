@@ -1,4 +1,4 @@
-.PHONY: setup test lint verify t2 calibrate sa-piloto ag-piloto ag-ajuste ox-demo memetico-ajuste experiments extra robustez tempos analysis tables figures
+.PHONY: setup test lint verify t2 calibrate sa-piloto ag-piloto ag-ajuste ox-demo memetico-ajuste experiments extra robustez tempos analysis tables figures report overleaf-zip
 
 export MPLBACKEND = Agg
 
@@ -93,6 +93,16 @@ analysis:
 	uv run python -m tp2.analysis
 
 tables figures: analysis
+
+report:
+	@echo "Compilando o relatório (pdfLaTeX)..."
+	cd relatorio && latexmk -pdf main.tex
+
+overleaf-zip:
+	@echo "Empacotando relatorio/ para upload no Overleaf (só arquivos versionados)..."
+	@mkdir -p tmp
+	git archive --format=zip -o tmp/relatorio-overleaf.zip HEAD:relatorio
+	@echo "tmp/relatorio-overleaf.zip"
 
 ox-demo:
 	@echo "Exemplo passo a passo do cruzamento OX (para o relatório)..."

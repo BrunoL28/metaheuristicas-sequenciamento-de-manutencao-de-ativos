@@ -1,0 +1,58 @@
+\section{Implementação}
+\label{sec:implementacao}
+
+\paragraph{Algoritmo separado do problema.}
+Os algoritmos enxergam o problema só pela interface sugerida no enunciado (\texttt{solucao\_aleatoria}, \texttt{h}, \texttt{sucessores}, \texttt{sucessor\_aleatorio}, \texttt{cruzamento}, \texttt{mutacao}), com uma extensão.
+Em vez da permutação pronta, \texttt{sucessores} devolve pares (movimento, $h$ do sucessor), e um método \texttt{aplicar} constrói o sucessor só quando o algoritmo o aceita.
+O movimento é opaco para o algoritmo, e sem essa extensão a avaliação incremental exigiria montar cada sucessor inteiro antes de avaliá-lo.
+Um teste automático falha se algum algoritmo importar o módulo do problema.
+
+\paragraph{Contagem de avaliações.}
+Um invólucro em volta do problema conta toda avaliação de $h$: chamadas diretas, cada sucessor examinado e cada filho do AG.
+A avaliação $B+1$ lança uma exceção que encerra o algoritmo, que portanto nunca checa o orçamento por conta própria.
+A descida gulosa não recalcula o $h$ da solução corrente; ele vem do sucessor aceito.
+Ao fim de cada execução conferimos que foram exatamente $B$ avaliações e reavaliamos a melhor permutação num problema sem contador; as duas condições valeram em todas as execuções.
+
+\paragraph{Vizinhanças e avaliação incremental.}
+A troca (\textit{swap}) e o 2-opt geram $n(n-1)/2$ sucessores distintos, e a inserção gera $(n-1)^2$, porque mover o elemento da posição $i$ para $i+1$ equivale a mover o de $i+1$ para $i$.
+Um movimento não altera as posições anteriores à primeira que toca.
+Guardamos então, para a solução corrente, o instante de conclusão e o custo acumulados em cada posição, e avaliamos cada sucessor a partir desse prefixo.
+Testes de propriedade (150 instâncias aleatórias, mais todos os sucessores da pequena e da média) confirmam que o valor incremental é idêntico ao completo.
+O ganho medido em $n = 150$ fica entre 1,38 e 1,45 vezes (Tabela~\ref{tab:t2}).
+É pouco porque a primeira posição tocada cai em média em $n/3$: ainda é preciso refazer cerca de $2n/3$ das posições, o que limita o ganho a uns 1,5 vezes.
+
+\paragraph{Descida gulosa.}
+As três variantes estão implementadas.
+A \textit{best improvement} examina a vizinhança inteira e fica com o melhor sucessor; a \textit{first improvement} percorre a vizinhança em ordem aleatória e aceita o primeiro que melhora; a \textit{random} sorteia sucessores e aceita o primeiro que melhora.
+Como a \textit{random} não tem como provar que chegou a um ótimo local, ela recomeça depois de $K = |N(s)|$ sorteios seguidos sem melhoria.
+Com reposição, a chance de nunca sortear um movimento de melhoria específico nesses $K$ sorteios é $(1 - 1/K)^K \approx e^{-1} \approx 37\%$.
+
+\paragraph{Simulated annealing.}
+O SA aceita um sucessor que não piora e aceita uma piora $\Delta > 0$ com probabilidade $e^{-\Delta/T}$~\citep{kirkpatrick1983annealing,slides2026cap4}.
+O resfriamento é geométrico em patamares de $L$ passos, e $\alpha = (T_f/T_0)^{1/(M-1)}$, com $M = \lceil (B-1)/L \rceil$ patamares, faz a temperatura chegar a $T_f$ exatamente quando o orçamento acaba.
+Como o $\Delta$ típico cresce com $n$, calibramos cada instância uma vez, com 2\,000 pares (permutação aleatória, sucessor aleatório).
+Das pioras $\Delta^+$ observadas tiramos $T_0 = -\operatorname{mediana}(\Delta^+)/\ln 0{,}9$, que aceita uma piora típica com probabilidade 0,9, e $T_f = -q_{10}(\Delta^+)/\ln 10^{-3}$, que aceita uma piora pequena com probabilidade $10^{-3}$.
+O resultado é $T_0$ de 5\,481 a 63\,416 e $T_f$ de 14,8 a 163,4, com $L = 100$, 300 e 1\,000 (Tabela~\ref{tab:sa-calibracao}, no apêndice).
+A calibração gasta 4\,000 avaliações por instância (de 1,3\% a 8\% de $B$), fora do orçamento das execuções; o Apêndice~\ref{ap:tabelas} mostra que descontá-las não muda o resultado.
+
+\paragraph{Algoritmo genético.}
+O AG segue o pseudocódigo da aula com elitismo explícito~\citep{slides2026cap4}.
+A população inicial tem $N$ permutações aleatórias ($N = 50$ na pequena e 100 nas outras); a cada geração os 2 melhores passam direto e o resto vem de filhos.
+Os pais saem de torneios de tamanho 3 e são cruzados com probabilidade $P_c = 0{,}9$, e cada filho sofre, com probabilidade $P_m = 0{,}2$, uma mutação que é um movimento aleatório de inserção.
+Todo filho é avaliado e contado, inclusive as cópias sem alteração, e a busca para só pelo orçamento.
+O torneio compara os custos diretamente (vence o menor $h$), então não há conversão de custo em aptidão: só a ordem importa, e a seleção não muda com a escala de $h$, que vai de $10^3$ a $10^6$ entre as instâncias.
+Uma roleta exigiria algo como $f = h_{\max} - h + \varepsilon$, e a pressão seletiva passaria a depender do espalhamento dos custos.
+Num piloto na média, com sementes fora do protocolo, $N \in \{50, 100, 200\}$ e $P_m \in \{0{,}2;\ 0{,}5;\ 1{,}0\}$ deram medianas entre 19\,297 e 21\,254, sem configuração claramente melhor.
+
+O cruzamento é o OX na convenção do slide da aula, uma variante do operador de \citet{davis1985epistatic}.
+O filho herda do pai 1 um bloco contíguo nas mesmas posições e preenche as posições livres, da esquerda para a direita, com os genes que faltam na ordem do pai 2.
+Na Tabela~\ref{tab:ox}, os cortes isolam o bloco $(5, 7, 2, 6)$; os genes que faltam aparecem no pai 2 na ordem $3, 8, 1, 4$ e ocupam as posições 1, 2, 7 e 8.
+O filho é sempre uma permutação, e o segundo filho troca o papel dos pais.
+O exemplo do slide (pais (1 2 3 4 5) e (5 4 2 1 3), bloco nas posições 2 a 4) dá (5 2 3 4 1), como na aula, e é um dos testes automáticos.
+
+\begin{table}[tbp]
+  \centering
+  \caption{Exemplo do cruzamento OX ($n = 8$). Em negrito, os genes que vêm do pai 2.}
+  \label{tab:ox}
+  \tabela{ox_exemplo}
+\end{table}

@@ -1,0 +1,11 @@
+\section{T1: validação da função de avaliação}
+\label{sec:t1}
+
+O comando \texttt{make verify} confere $h$ contra os valores do enunciado e imprime o quadro abaixo, reproduzido sem edição.
+A identidade na instância pequena custa 4\,366, como pede o enunciado.
+Para não depender só do valor publicado de $h^*$, calculamos o ótimo da instância pequena por programação dinâmica exata sobre (conjunto visitado, último ativo), guardando os pares (instante, custo) não dominados.
+Ela devolve $h^* = 1\,875$ na rota $(5, 4, 1, 6, 7, 2, 8, 12, 3, 10, 9, 11)$.
+O guloso do enunciado só reproduz 3\,168 quando os empates (frequentes no início da rota, quando nenhum candidato ainda gera atraso) são desfeitos pelo menor deslocamento.
+O exemplo da Figura~1 do enunciado não traz as coordenadas; reconstruímos as quatro a partir do desenho e dos instantes de conclusão, e elas reproduzem 39 e 22.
+
+{\small\verbatiminput{tabelas/verify.txt}}

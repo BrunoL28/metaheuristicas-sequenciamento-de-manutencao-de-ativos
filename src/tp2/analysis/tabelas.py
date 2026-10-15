@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import random
 import statistics
 from pathlib import Path
 
@@ -12,6 +13,7 @@ from tp2.analysis.formato import gravar, num, pct, pvalor, tabular
 from tp2.experiments import configs
 from tp2.problem.instance import RAIZ_PROJETO, load_named
 from tp2.problem.maintenance import MaintenanceProblem
+from tp2.problem.operators import cortes, ox
 
 # Algoritmo (A) da tabela principal: a variante com a melhor mediana na média
 # no T3 (CONTEXT §8). As três variantes aparecem em gd_variantes.tex.
@@ -358,6 +360,18 @@ def extra(linhas_extra: list[dict]) -> str:
     )
 
 
+def extra_vs_buscas(t3: list[dict], linhas_extra: list[dict]) -> str:
+    """AG memético contra as duas buscas locais do T3 (Holm sobre as 2 comparações)."""
+    h = {**_por_config(t3), **_por_config(linhas_extra)}
+    familias = []
+    for inst in INSTANCIAS:
+        grupos = {c: h[(inst, c)] for c in ("AG memético", ALGORITMO_A, "SA")}
+        familias.append(
+            (inst, comparar(grupos, [("AG memético", ALGORITMO_A), ("AG memético", "SA")]))
+        )
+    return _tabela_testes(familias)
+
+
 def robustez(t3: list[dict], rob: list[dict]) -> str:
     """SA sem as avaliações da calibração e os algoritmos com o dobro do orçamento."""
     h = {**_por_config(t3), **_por_config(rob)}
@@ -433,6 +447,24 @@ def melhores_solucoes(pastas: dict[str, list[dict]]) -> tuple[str, str]:
     return tabela, "\n".join(texto) + "\n"
 
 
+def ox_exemplo(n: int = 8, seed: int = 15) -> str:
+    """O exemplo passo a passo do OX (o mesmo de ``make ox-demo``) como tabela."""
+    rng = random.Random(seed)
+    p1 = rng.sample(range(1, n + 1), n)
+    p2 = rng.sample(range(1, n + 1), n)
+    a, b = cortes(n, rng)
+    bloco = ["" if not a <= k <= b else str(p1[k]) for k in range(n)]
+    filho = ox(p1, p2, a, b)
+    preenchidos = [f"\\textbf{{{g}}}" if not a <= k <= b else str(g) for k, g in enumerate(filho)]
+    linhas = [
+        ["Pai 1", *map(str, p1)],
+        ["Pai 2", *map(str, p2)],
+        ["Bloco do pai 1", *bloco],
+        ["Filho", *preenchidos],
+    ]
+    return tabular("l" + "c" * n, ["Posição", *(str(k + 1) for k in range(n))], linhas, grupos=[2])
+
+
 def gerar(saida: Path) -> list[Path]:
     pasta_t3 = dados.pasta_atual("T3")
     pasta_t2 = dados.pasta_atual("T2")
@@ -453,10 +485,16 @@ def gerar(saida: Path) -> list[Path]:
         "otimos_locais.tex": otimos_locais(t3, pasta_t3),
         "extra.tex": extra(extra_),
         "robustez.tex": robustez(t3, rob),
+        "extra_vs_buscas.tex": extra_vs_buscas(t3, extra_),
+        "ox_exemplo.tex": ox_exemplo(),
     }
     tabela, permutacoes = melhores_solucoes({"T2": t2, "T3": t3, "extra": extra_, "robustez": rob})
     conteudos["melhores.tex"] = tabela
     arquivos = [gravar(saida, nome, texto) for nome, texto in conteudos.items()]
     caminho = saida.parent / "melhores_solucoes.txt"
     caminho.write_text(permutacoes)
-    return [*arquivos, caminho]
+    # A saída do make verify vai literal no relatório (T1); a cópia deixa
+    # relatorio/ autocontido para o upload no Overleaf.
+    verify = saida / "verify.txt"
+    verify.write_text((RAIZ_PROJETO / "results" / "verify.txt").read_text())
+    return [*arquivos, caminho, verify]

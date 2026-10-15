@@ -1,0 +1,72 @@
+% =============================================================================
+%  Trabalho Prático 2 - Fundamentos de Inteligência Artificial (UFMG / DEE)
+%  Busca local e algoritmo genético no sequenciamento de manutenção de ativos
+%
+%  Compilar com pdfLaTeX (Overleaf: Menu -> Compiler: pdfLaTeX; Main document:
+%  main.tex). Localmente: `make report`.
+%
+%  As tabelas (tabelas/*.tex) e as figuras (figuras/*.pdf) são geradas por
+%  `make analysis` a partir dos CSVs em results/. Não edite esses arquivos à
+%  mão: mude o código de análise e gere de novo.
+% =============================================================================
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{verbatim}
+\usepackage{textcomp}
+\usepackage{natbib}
+\usepackage{flafter}
+\usepackage[hidelinks]{hyperref}
+
+\graphicspath{{figuras/}}
+\captionsetup{font=small,labelfont=bf}
+\setlength{\tabcolsep}{3.5pt}
+\setlength{\textfloatsep}{10pt plus 2pt minus 2pt}
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}
+% Deixa tabelas e figuras dividirem a página com o texto (evita páginas só de floats).
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.8}
+
+% Tabelas geradas: só o tabular, centralizado e em fonte menor.
+\newcommand{\tabela}[1]{{\small\centering\input{tabelas/#1}\par}}
+
+\title{\textbf{Busca Local e Algoritmo Genético no\\Sequenciamento de Manutenção de Ativos}\\[0.5em]
+       \large Trabalho Prático 2 -- Fundamentos de Inteligência Artificial}
+\author{Arthur Fernandes \and Bruno Lima}
+% TODO grupo: confirmar se Felipe Augusto faz parte do grupo neste TP e incluir o nome.
+\date{Universidade Federal de Minas Gerais -- Departamento de Engenharia Elétrica\\
+      Profs. Cristiano Leite de Castro e João Pedro Campos\\[0.5em]
+      Outubro de 2026}
+
+\begin{document}
+
+\maketitle
+
+\input{secoes/resumo}
+\input{secoes/introducao}
+\input{secoes/implementacao}
+\input{secoes/t1}
+\input{secoes/t2}
+\input{secoes/t3}
+\input{secoes/discussao}
+\input{secoes/conclusao}
+
+\bibliographystyle{apalike-pt}
+\bibliography{referencias}
+
+\appendix
+\input{secoes/apendices}
+
+\end{document}
