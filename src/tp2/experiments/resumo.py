@@ -34,7 +34,7 @@ def resumir(pasta: Path) -> str:
     ordem_inst = {nome: k for k, nome in enumerate(configs.INSTANCIAS)}
     saida = []
     cabecalho = (
-        f"{'instância':<9} {'config':<20} {'exec':>4} {'mín':>7} {'mediana':>9} "
+        f"{'instância':<9} {'config':<24} {'exec':>4} {'mín':>7} {'mediana':>9} "
         f"{'média':>9} {'máx':>7} {'≤ ref':>5} {'passos':>8} {'ót.loc':>7} "
         f"{'distintos':>9} {'s/exec':>7}"
     )
@@ -51,7 +51,7 @@ def resumir(pasta: Path) -> str:
 
         config = "/".join(chave[1:])
         saida.append(
-            f"{chave[0]:<9} {config:<20} {len(hs):>4} {min(hs):>7} "
+            f"{chave[0]:<9} {config:<24} {len(hs):>4} {min(hs):>7} "
             f"{statistics.median(hs):>9.1f} {statistics.fmean(hs):>9.1f} {max(hs):>7} "
             f"{sum(h <= ref for h in hs):>5} {media('passos'):>8} {media('otimos_locais'):>7} "
             f"{media('otimos_distintos'):>9} {media('wall_s'):>7}"
@@ -61,7 +61,40 @@ def resumir(pasta: Path) -> str:
         "≤ ref: execuções que atingiram ou superaram o valor de referência da Tabela 1. "
         "passos, ót.loc, distintos e s/exec são médias por execução."
     )
+    if (pasta / "sa_aceitacao.csv").exists():
+        saida += ["", *_aceitacao_sa(pasta, {linha["run_id"]: linha for linha in linhas})]
     return "\n".join(saida)
+
+
+JANELAS_MOSTRADAS = (1, 10, 25, 50, 75, 90, 100)
+
+
+def _aceitacao_sa(pasta: Path, runs: dict[str, dict]) -> list[str]:
+    """Mediana entre execuções da taxa de aceitação de pioras em algumas janelas."""
+    taxas: dict[str, dict[int, list[float]]] = defaultdict(lambda: defaultdict(list))
+    contador: dict[str, int] = defaultdict(int)
+    with (pasta / "sa_aceitacao.csv").open(newline="") as f:
+        for linha in csv.DictReader(f):
+            rid = linha["run_id"]
+            if rid not in runs:
+                continue
+            contador[rid] += 1
+            if linha["taxa"] != "":
+                taxas[runs[rid]["instancia"]][contador[rid]].append(float(linha["taxa"]))
+    cabecalho = f"{'SA: aceitação de pioras (mediana) na janela':<45}" + "".join(
+        f"{k:>7}" for k in JANELAS_MOSTRADAS
+    )
+    saida = [cabecalho, "-" * len(cabecalho)]
+    for inst in configs.INSTANCIAS:
+        if inst not in taxas:
+            continue
+        valores = [
+            f"{statistics.median(taxas[inst][k]):>7.3f}" if taxas[inst][k] else f"{'-':>7}"
+            for k in JANELAS_MOSTRADAS
+        ]
+        saida.append(f"{inst:<45}" + "".join(valores))
+    saida.append("Cada janela tem B/100 passos; a janela 1 é o início da execução e a 100, o fim.")
+    return saida
 
 
 def main() -> None:

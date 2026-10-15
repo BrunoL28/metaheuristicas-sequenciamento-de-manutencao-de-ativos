@@ -42,7 +42,10 @@ def celulas(suite: str) -> list[Celula]:
     if suite == "t2":
         # T2: a mesma busca local (first improvement) em cada vizinhança.
         return [Celula("gd", "first", v) for v in VIZINHANCAS]
+    if suite == "sa_piloto":
+        # Confere o perfil de aceitação do SA calibrado (configs/sa_*.json).
+        return [Celula("sa", "geometrico", VIZINHANCA)]
     raise ValueError(f"suíte desconhecida: {suite!r}")
 
 
-SUITES = ("t2",)
+SUITES = ("t2", "sa_piloto")
