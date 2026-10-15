@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -54,26 +55,25 @@ def load_instance(caminho: str | Path, nome: str | None = None) -> Instance:
             f"{caminho}: esperava {3 + 5 * n} números para n = {n}, encontrei {len(tokens)}"
         )
     valores = [int(t) for t in tokens]
+    ativos = [tuple(valores[3 + 5 * i : 8 + 5 * i]) for i in range(n)]
+    return criar_instancia(
+        nome or caminho.stem.removeprefix("manutencao_"), (valores[1], valores[2]), ativos
+    )
 
-    xy = [(valores[1], valores[2])]
+
+def criar_instancia(
+    nome: str, base: tuple[int, int], ativos: Sequence[tuple[int, int, int, int, int]]
+) -> Instance:
+    """Monta uma instância a partir da base e das linhas (x, y, p, d, w) dos ativos."""
+    xy = [tuple(base)]
     p, d, w = [0], [0], [0]
-    for i in range(n):
-        x, y, pj, dj, wj = valores[3 + 5 * i : 8 + 5 * i]
+    for x, y, pj, dj, wj in ativos:
         xy.append((x, y))
         p.append(pj)
         d.append(dj)
         w.append(wj)
-
     T = tuple(tuple(tempo_deslocamento(a, b) for b in xy) for a in xy)
-    return Instance(
-        nome=nome or caminho.stem.removeprefix("manutencao_"),
-        n=n,
-        xy=tuple(xy),
-        p=tuple(p),
-        d=tuple(d),
-        w=tuple(w),
-        T=T,
-    )
+    return Instance(nome=nome, n=len(ativos), xy=tuple(xy), p=tuple(p), d=tuple(d), w=tuple(w), T=T)
 
 
 def load_named(nome: str) -> Instance:

@@ -15,11 +15,11 @@
 | # | Component | Status | Tested? | Notes |
 |---|---|---|---|---|
 | C0 | Project scaffolding (`pyproject.toml`, `uv.lock`, `Makefile`, package layout) | 🟡 In progress | `uv sync --locked`, ruff, pytest green; CI workflow `.github/workflows/ci.yml` | M1: hatchling backend (local uv 0.6.12 predates `uv_build`); Makefile has `setup test lint verify`, the other targets land with their missions |
-| C1 | `Problem` interface + `Move` type | ⬜ Not started | — | `src/tp2/core/interface.py` |
-| C2 | `CountingProblem` (budget, counter, best-so-far trace) | ⬜ Not started | — | single counting point (§3, §6 "Cuidado com a contagem") |
+| C1 | `Problem` interface + `Move` type | ✅ Done (M2) | Exercised through C2/C5 tests | `src/tp2/core/interface.py`; AST test `tests/test_arquitetura.py` forbids `tp2.problem` imports in `tp2/algorithms` (checked to fail on a planted import) |
+| C2 | `CountingProblem` (budget, counter, best-so-far trace) | ✅ Done (M2) | B calls succeed and B+1 raises; mid-scan stop; `best_s` re-evaluates to `best_h`; non-evaluating methods don't count (`tests/test_counting.py`) | Stores only improvement events `(evals, best_h)`; the 201-point grid is derived at write time (C10) |
 | C3 | Instance loader | ✅ Done (M1) | n, Σp, base, symmetric T, no .5 ties (`tests/test_instance.py`) | `src/tp2/problem/instance.py` |
 | C4 | `MaintenanceProblem` — full fitness h | ✅ Done (M1) | 4366, toy 39/22 + C_j of Fig. 1, unique optimum 22, prefix monotonicity (`tests/test_fitness.py`) | `src/tp2/problem/maintenance.py`; baselines in `heuristicas.py` (greedy 3168, NN 2590); exact DP in `exato.py` |
-| C5 | Neighborhoods: swap / insertion / 2-opt (+ incremental evaluation) | ⬜ Not started | — | |
+| C5 | Neighborhoods: swap / insertion / 2-opt (+ incremental evaluation) | ✅ Done (M2) | Sizes, distinctness, Fig. 3 examples, hypothesis property incremental == full (150 random instances n ≤ 30), equality on pequena/media (`tests/test_neighborhoods.py`) | Incremental = rebuild only the suffix from the first touched position + evaluate from the cached prefix. Measured gain 1.1–1.4× (≤ 1.5× theoretical, since E[min(i,j)] ≈ n/3): see below |
 | C6 | Crossover (OX; PMX deferred) + mutation operators | ⬜ Not started | — | |
 | C7 | Greedy descent + random restart (3 variants) | ⬜ Not started | — | |
 | C8 | Simulated annealing + SA calibration script | ⬜ Not started | — | |
@@ -36,6 +36,7 @@
 - Σp = 55 / 239 / 684 ✅ (matches statement §1.3 table).
 - Fig. 1 toy instance reconstructed: base (0,0), 1=(3,4), 2=(6,0), 3=(0,8), 4=(6,8) (p, d, w from the figure). h(1,4,2,3) = **39**, unique optimum (1,4,3,2) = **22** ✅.
 - Statement's greedy value **3168** is reproduced only with the rule "min immediate tardiness increment; tie → min travel time; tie → lowest index". Nearest-neighbour gives **2590**.
+- **Incremental evaluation timing** (M2, `python -m tp2.experiments.tempo_movimentos`, 20 solutions × 5000 random moves): µs per successor, full → incremental: pequena 1.3 → 1.1–1.25; media 5.0–5.3 → 3.5–4.1; grande 13.9–14.7 → 10.3–10.4 (gain 1.34× swap, 1.41× insertion, 1.43× 2-opt at n = 150). The definitive table is regenerated in M3 inside the T2 results folder.
 - **h* = 1875 confirmed independently** (M1): an exact DP over (visited set, last asset) with Pareto labels (C, h) finds the optimum (5, 4, 1, 6, 7, 2, 8, 12, 3, 10, 9, 11) in < 1 s. It's valid because future cost never decreases as C grows, so (C, h) labels dominate componentwise.
 - Pure-Python full evaluation with a precomputed integer travel matrix: **~15 µs/eval at n = 150**, so 300k evals ≈ 4.5 s/run (16 cores available). Compute is not a constraint.
 
@@ -684,13 +685,13 @@ Delivery schedule approved 2026-10-14 (deadline **2026-10-18**). Each mission is
 | Σp per instance | 3 files | 55 / 239 / 684 | ✅ |
 | Statement greedy | pequena, min-increment, tie → travel | 3168 | ✅ |
 | Nearest neighbour | pequena | 2590 | ✅ |
-| Budget exactness | dummy problem, B = 100, 110 calls | 100 succeed, 101st raises | ⬜ |
-| Incremental == full | hypothesis, n ∈ [2, 30], all ops | equality on every move | ⬜ |
-| Neighborhood sizes | n = 12/50/150 | 66/1225/11175 (swap, 2-opt), 121/2401/22201 (insertion) | ⬜ |
-| Successor distinctness | n = 12, all ops | no duplicates, none equal to s | ⬜ |
+| Budget exactness | pequena, B = 100, 110 calls | 100 succeed, 101st raises | ✅ |
+| Incremental == full | hypothesis, n ∈ [2, 30], all ops | equality on every move | ✅ |
+| Neighborhood sizes | n = 12/50/150 | 66/1225/11175 (swap, 2-opt), 121/2401/22201 (insertion) | ✅ |
+| Successor distinctness | n = 2, 3, 5, 12, all ops | no duplicates, none equal to s | ✅ |
 | OX slide example | P1 = (1,2,3,4,5), P2 = (5,4,2,1,3), block = positions 1..3 | (5,2,3,4,1) | ⬜ |
 | Permutation validity | hypothesis, OX/mutations | always a permutation of 1..n | ⬜ |
-| Architecture | AST of `tp2/algorithms/*.py` | no `tp2.problem` import | ⬜ |
+| Architecture | AST of `tp2/algorithms/*.py` | no `tp2.problem` import | ✅ |
 | Run invariants | every T3 row | evals == B; fresh h(best_perm) == best_h | ⬜ |
 | Reproducibility | same seed, two runs | identical best_h and curve | ⬜ |
 
