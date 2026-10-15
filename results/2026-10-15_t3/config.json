@@ -1,0 +1,85 @@
+{
+  "suite": "t3",
+  "data": "2026-10-15T09:40:33",
+  "git_commit": "7bd25eb",
+  "base_seed": 20261014,
+  "regra_seed": "base_seed + 1000 * indice_instancia + run",
+  "instancias": [
+    "pequena",
+    "media",
+    "grande"
+  ],
+  "orcamento": {
+    "pequena": 50000,
+    "media": 150000,
+    "grande": 300000
+  },
+  "execucoes": {
+    "pequena": 30,
+    "media": 30,
+    "grande": 10
+  },
+  "celulas": [
+    {
+      "algoritmo": "gd",
+      "variante": "best",
+      "vizinhanca": "insertion",
+      "rotulo": "",
+      "params": {},
+      "problema": {},
+      "fator_orcamento": 1.0,
+      "descontar_calibracao": false,
+      "instancias": null
+    },
+    {
+      "algoritmo": "gd",
+      "variante": "first",
+      "vizinhanca": "insertion",
+      "rotulo": "",
+      "params": {},
+      "problema": {},
+      "fator_orcamento": 1.0,
+      "descontar_calibracao": false,
+      "instancias": null
+    },
+    {
+      "algoritmo": "gd",
+      "variante": "random",
+      "vizinhanca": "insertion",
+      "rotulo": "",
+      "params": {},
+      "problema": {},
+      "fator_orcamento": 1.0,
+      "descontar_calibracao": false,
+      "instancias": null
+    },
+    {
+      "algoritmo": "sa",
+      "variante": "geometrico",
+      "vizinhanca": "insertion",
+      "rotulo": "",
+      "params": {},
+      "problema": {},
+      "fator_orcamento": 1.0,
+      "descontar_calibracao": false,
+      "instancias": null
+    },
+    {
+      "algoritmo": "ag",
+      "variante": "padrao",
+      "vizinhanca": "insertion",
+      "rotulo": "",
+      "params": {},
+      "problema": {},
+      "fator_orcamento": 1.0,
+      "descontar_calibracao": false,
+      "instancias": null
+    }
+  ],
+  "total_execucoes": 350,
+  "processos": 15,
+  "python": "3.12.3",
+  "plataforma": "Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "processador": "x86_64",
+  "cpus": 16
+}

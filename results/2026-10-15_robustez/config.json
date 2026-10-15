@@ -1,0 +1,111 @@
+{
+  "suite": "robustez",
+  "data": "2026-10-15T09:43:21",
+  "git_commit": "7bd25eb",
+  "base_seed": 20261014,
+  "regra_seed": "base_seed + 1000 * indice_instancia + run",
+  "instancias": [
+    "pequena",
+    "media",
+    "grande"
+  ],
+  "orcamento": {
+    "pequena": 50000,
+    "media": 150000,
+    "grande": 300000
+  },
+  "execucoes": {
+    "pequena": 30,
+    "media": 30,
+    "grande": 10
+  },
+  "celulas": [
+    {
+      "algoritmo": "sa",
+      "variante": "geometrico",
+      "vizinhanca": "insertion",
+      "rotulo": "B-calibracao",
+      "params": {},
+      "problema": {},
+      "fator_orcamento": 1.0,
+      "descontar_calibracao": true,
+      "instancias": null
+    },
+    {
+      "algoritmo": "gd",
+      "variante": "best",
+      "vizinhanca": "insertion",
+      "rotulo": "2B",
+      "params": {},
+      "problema": {},
+      "fator_orcamento": 2,
+      "descontar_calibracao": false,
+      "instancias": [
+        "media",
+        "grande"
+      ]
+    },
+    {
+      "algoritmo": "gd",
+      "variante": "first",
+      "vizinhanca": "insertion",
+      "rotulo": "2B",
+      "params": {},
+      "problema": {},
+      "fator_orcamento": 2,
+      "descontar_calibracao": false,
+      "instancias": [
+        "media",
+        "grande"
+      ]
+    },
+    {
+      "algoritmo": "gd",
+      "variante": "random",
+      "vizinhanca": "insertion",
+      "rotulo": "2B",
+      "params": {},
+      "problema": {},
+      "fator_orcamento": 2,
+      "descontar_calibracao": false,
+      "instancias": [
+        "media",
+        "grande"
+      ]
+    },
+    {
+      "algoritmo": "sa",
+      "variante": "geometrico",
+      "vizinhanca": "insertion",
+      "rotulo": "2B",
+      "params": {},
+      "problema": {},
+      "fator_orcamento": 2,
+      "descontar_calibracao": false,
+      "instancias": [
+        "media",
+        "grande"
+      ]
+    },
+    {
+      "algoritmo": "ag",
+      "variante": "padrao",
+      "vizinhanca": "insertion",
+      "rotulo": "2B",
+      "params": {},
+      "problema": {},
+      "fator_orcamento": 2,
+      "descontar_calibracao": false,
+      "instancias": [
+        "media",
+        "grande"
+      ]
+    }
+  ],
+  "total_execucoes": 270,
+  "processos": 15,
+  "python": "3.12.3",
+  "plataforma": "Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "processador": "x86_64",
+  "cpus": 16
+}

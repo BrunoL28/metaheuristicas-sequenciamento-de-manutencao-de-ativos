@@ -100,10 +100,14 @@ def montar_jobs(
     jobs = []
     for cel in configs.celulas(suite):
         for inst in instancias:
+            if cel.instancias is not None and inst not in cel.instancias:
+                continue
             execucoes = configs.EXECUCOES[inst]
             if max_execucoes is not None:
                 execucoes = min(execucoes, max_execucoes)
-            orcamento_inst = orcamento or configs.ORCAMENTO[inst]
+            orcamento_inst = round((orcamento or configs.ORCAMENTO[inst]) * cel.fator_orcamento)
+            if cel.descontar_calibracao:
+                orcamento_inst -= calibrate_sa.carregar(inst)["avaliacoes_calibracao"]
             params = _parametros(cel, inst, orcamento_inst)
             for run in range(execucoes):
                 job = {
@@ -112,6 +116,7 @@ def montar_jobs(
                     "variante": cel.variante,
                     "vizinhanca": cel.vizinhanca,
                     "rotulo": cel.rotulo,
+                    "problema": dict(cel.problema),
                     "params": params,
                     "instancia": inst,
                     "run": run,
@@ -151,7 +156,10 @@ def _parametros(cel: configs.Celula, instancia: str, orcamento: int) -> dict:
 def executar(job: dict) -> dict:
     """Roda uma execução e devolve a linha do ``runs.csv`` e a telemetria."""
     inst = load_named(job["instancia"])
-    problema = CountingProblem(MaintenanceProblem(inst, job["vizinhanca"]), budget=job["orcamento"])
+    problema = CountingProblem(
+        MaintenanceProblem(inst, job["vizinhanca"], **job.get("problema", {})),
+        budget=job["orcamento"],
+    )
     rng = random.Random(job["seed"])
     rec = Recorder()
     resumo: dict = {}
@@ -391,6 +399,10 @@ def _gravar_config(pasta, args, instancias, commit, total, pendentes) -> None:
                     "vizinhanca": c.vizinhanca,
                     "rotulo": c.rotulo,
                     "params": c.params,
+                    "problema": c.problema,
+                    "fator_orcamento": c.fator_orcamento,
+                    "descontar_calibracao": c.descontar_calibracao,
+                    "instancias": c.instancias,
                 }
                 for c in configs.celulas(args.suite)
             ],

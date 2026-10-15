@@ -30,6 +30,9 @@ AG = {
     "media": {"N": 100, "Pc": 0.9, "Pm": 0.2, "k": 3, "elite": 2},
     "grande": {"N": 100, "Pc": 0.9, "Pm": 0.2, "k": 3, "elite": 2},
 }
+# AG memético (experimento extra): cada filho desce até um ótimo local com
+# probabilidade P_LS. Escolhido no piloto make memetico-ajuste.
+P_LS = 0.1
 
 
 @dataclass(frozen=True)
@@ -42,6 +45,14 @@ class Celula:
     params: dict = field(default_factory=dict, hash=False)
     # Distingue células do mesmo algoritmo e variante com parâmetros diferentes.
     rotulo: str = ""
+    # Opções do MaintenanceProblem além da vizinhança (ex.: cruzamento PMX).
+    problema: dict = field(default_factory=dict, hash=False)
+    # Orçamento da célula = B · fator_orcamento, menos as avaliações da
+    # calibração do SA se descontar_calibracao.
+    fator_orcamento: float = 1.0
+    descontar_calibracao: bool = False
+    # Restringe a célula a algumas instâncias (None = todas as da suíte).
+    instancias: tuple[str, ...] | None = None
 
 
 def semente(instancia: str, run: int, base: int = BASE_SEED) -> int:
@@ -65,7 +76,59 @@ def celulas(suite: str) -> list[Celula]:
             Celula("ag", "padrao", VIZINHANCA, {"N": N, "Pm": Pm}, f"N{N}-Pm{Pm}")
             for N, Pm in ((100, 0.2), (100, 0.5), (100, 1.0), (50, 0.2), (200, 0.2))
         ]
+    if suite == "memetico_ajuste":
+        # Piloto da probabilidade de busca local do AG memético (sementes fora
+        # do protocolo).
+        return [
+            Celula("ag", "padrao", VIZINHANCA, {"p_ls": p}, f"memetico-pls{p}")
+            for p in (0.02, 0.1, 0.5)
+        ]
+    if suite in ("t3", "tempos"):
+        # T3: os três algoritmos com o protocolo da Seção 3. A descida gulosa
+        # roda nas três variantes. "tempos" repete as mesmas células em um
+        # processo só, para medir o tempo de parede sem carga paralela.
+        return [Celula("gd", v, VIZINHANCA) for v in ("best", "first", "random")] + [
+            Celula("sa", "geometrico", VIZINHANCA),
+            Celula("ag", "padrao", VIZINHANCA),
+        ]
+    if suite == "extra":
+        # Experimento extra: o cruzamento ajuda? OX (padrão), só mutação,
+        # headless chicken, PMX e AG memético.
+        return [
+            Celula("ag", "padrao", VIZINHANCA, rotulo="ox"),
+            Celula("ag", "padrao", VIZINHANCA, {"Pc": 0.0}, "so-mutacao"),
+            Celula("ag", "headless", VIZINHANCA),
+            Celula("ag", "padrao", VIZINHANCA, rotulo="pmx", problema={"cruzamento": "pmx"}),
+            Celula("ag", "padrao", VIZINHANCA, {"p_ls": P_LS}, "memetico"),
+        ]
+    if suite == "robustez":
+        # (1) SA descontando do orçamento as avaliações gastas na calibração;
+        # (2) os três algoritmos com o dobro do orçamento na média e na grande.
+        maiores = ("media", "grande")
+        return [
+            Celula(
+                "sa", "geometrico", VIZINHANCA, rotulo="B-calibracao", descontar_calibracao=True
+            ),
+            *(
+                Celula("gd", v, VIZINHANCA, rotulo="2B", fator_orcamento=2, instancias=maiores)
+                for v in ("best", "first", "random")
+            ),
+            Celula(
+                "sa", "geometrico", VIZINHANCA, rotulo="2B", fator_orcamento=2, instancias=maiores
+            ),
+            Celula("ag", "padrao", VIZINHANCA, rotulo="2B", fator_orcamento=2, instancias=maiores),
+        ]
     raise ValueError(f"suíte desconhecida: {suite!r}")
 
 
-SUITES = ("t2", "sa_piloto", "ag_piloto", "ag_ajuste")
+SUITES = (
+    "t2",
+    "sa_piloto",
+    "ag_piloto",
+    "ag_ajuste",
+    "memetico_ajuste",
+    "t3",
+    "tempos",
+    "extra",
+    "robustez",
+)
