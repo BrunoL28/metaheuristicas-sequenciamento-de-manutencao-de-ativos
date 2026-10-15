@@ -12,7 +12,7 @@ _Last updated: 2026-10-15_
 
 ## 🟡 In progress
 
-- [ ] **M8** Report draft: PR (`docs/relatorio`), awaiting review. Group: read `relatorio/main.pdf` (`make report`), confirm Felipe (cover), decide whether to cut toward ~5 pages; then upload `make overleaf-zip` to Overleaf.
+- [ ] **M8** Report draft: PR (`docs/relatorio`), awaiting review. Group: read `relatorio/main.pdf` (`make report`), confirm Felipe (cover); length is fine (body ≈ 7 pages, Bruno accepts 5 + 1–2); then upload `make overleaf-zip` to Overleaf.
 
 ## 🟢 This week / next
 
