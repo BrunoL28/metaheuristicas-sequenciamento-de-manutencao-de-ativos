@@ -71,6 +71,11 @@ Pré-requisitos: [`uv`](https://github.com/astral-sh/uv) e `make`. Primeiro `mak
 | Exemplo passo a passo do cruzamento OX | `make ox-demo` | `results/ox_demo.txt` |
 | Piloto do AG: convergência e diversidade (3 execuções por instância) | `make ag-piloto` | `results/<data>_ag_piloto/` (`ag_geracoes.csv`, `resumo.txt`) |
 | Ajuste do AG na média (N e Pm, sementes fora do protocolo) | `make ag-ajuste` | `results/<data>_ag_ajuste/` |
+| Ajuste do AG memético (probabilidade de busca local) | `make memetico-ajuste` | `results/<data>_memetico_ajuste/` |
+| T3 — descida gulosa (3 variantes), SA e AG, 30/30/10 execuções | `make experiments` | `results/<data>_t3/`; pasta atual em `results/LATEST_T3` |
+| Experimento extra — AG com OX, só mutação, headless chicken, PMX e memético | `make extra` | `results/<data>_extra/`; `results/LATEST_EXTRA` |
+| Robustez — SA sem as avaliações da calibração; os três algoritmos com 2B | `make robustez` | `results/<data>_robustez/`; `results/LATEST_ROBUSTEZ` |
+| Tempos sem carga paralela (3 execuções por célula, 1 processo) | `make tempos` | `results/<data>_tempos/`; `results/LATEST_TEMPOS` |
 
 _Rows for tables and figures are added as the missions land (plan C15)._
 

@@ -1,0 +1,27 @@
+instância config                             exec     mín   mediana     média     máx ≤ ref   passos  ót.loc distintos  s/exec
+------------------------------------------------------------------------------------------------------------------------------
+media     ag/padrao/insertion/memetico-pls0.02   10   16175   17171.5   17212.3   18938     1        -       -         -     1.5
+media     ag/padrao/insertion/memetico-pls0.1   10   16530   16816.0   17101.5   17954     0        -       -         -     1.5
+media     ag/padrao/insertion/memetico-pls0.5   10   16516   17527.0   17521.2   19508     0        -       -         -     1.2
+grande    ag/padrao/insertion/memetico-pls0.02   10   74582   82138.5   82592.3   95800     0        -       -         -     7.9
+grande    ag/padrao/insertion/memetico-pls0.1   10   73103   78443.0   78208.3   83705     0        -       -         -     7.6
+grande    ag/padrao/insertion/memetico-pls0.5   10   74582   82441.5   82651.1   91084     0        -       -         -     7.5
+
+≤ ref: execuções que atingiram ou superaram o valor de referência da Tabela 1. passos, ót.loc, distintos e s/exec são médias por execução.
+
+AG: permutações distintas na população (mediana)           0%       1%      10%      25%      50%     100%
+----------------------------------------------------------------------------------------------------------
+media                                                   100.0    100.0    100.0    100.0    100.0     99.0
+grande                                                  100.0    100.0    100.0    100.0    100.0    100.0
+
+AG: distância média entre pares (posições) (mediana)       0%       1%      10%      25%      50%     100%
+----------------------------------------------------------------------------------------------------------
+media                                                    48.9     48.9     48.9     48.9     48.9     48.8
+grande                                                  149.0    149.0    149.0    149.0    149.0    149.0
+
+AG: h médio da população (mediana)                         0%       1%      10%      25%      50%     100%
+----------------------------------------------------------------------------------------------------------
+media                                                160707.4 160707.4 160399.9 160017.2 160017.2 141220.8
+grande                                              1275505.51275505.51275505.51275505.51275113.51267906.6
+
+Colunas: fração das gerações completadas (0% = população inicial).

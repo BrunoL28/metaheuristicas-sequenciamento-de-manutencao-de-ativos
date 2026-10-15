@@ -1,0 +1,46 @@
+instância config                             exec     mín   mediana     média     máx ≤ ref   passos  ót.loc distintos  s/exec
+------------------------------------------------------------------------------------------------------------------------------
+pequena   ag/padrao/insertion                   3    1875    1937.0    1916.3    1937     1        -       -         -     0.3
+pequena   gd/best/insertion                     3    1875    1875.0    1875.0    1875     3    363.3    48.7      13.3     0.1
+pequena   gd/first/insertion                    3    1875    1875.0    1875.0    1875     3   2403.7   137.3      17.3     0.1
+pequena   gd/random/insertion                   3    1875    1875.0    1875.0    1875     3   2544.0   150.7      70.7     0.1
+pequena   sa/geometrico/insertion               3    1875    1875.0    1875.0    1875     3  49999.0       -         -     0.2
+media     ag/padrao/insertion                   3   17367   18610.0   19143.3   21453     0        -       -         -     1.8
+media     gd/best/insertion                     3   17327   17664.0   17606.7   17829     0     61.0     1.0       1.0     0.6
+media     gd/first/insertion                    3   16913   17331.0   17229.3   17444     0   1527.0     9.3       9.3     0.7
+media     gd/random/insertion                   3   16912   17125.0   17364.0   18055     0   1824.7    11.7      11.7     0.7
+media     sa/geometrico/insertion               3   16334   17903.0   17701.3   18867     0 149999.0       -         -     1.3
+grande    ag/padrao/insertion                   3   94075   97014.0   99680.3  107952     0        -       -         -     8.4
+grande    gd/best/insertion                     3  890992  903625.0  900355.0  906448     0     13.0     0.0       0.0     3.4
+grande    gd/first/insertion                    3   78212   82958.0   82458.3   86205     0   1418.3     1.3       1.3     3.4
+grande    gd/random/insertion                   3   76693   80274.0   79502.0   81539     0   1551.7     1.7       1.7     3.9
+grande    sa/geometrico/insertion               3   75791   78688.0   77792.7   78899     0 299999.0       -         -     6.0
+
+≤ ref: execuções que atingiram ou superaram o valor de referência da Tabela 1. passos, ót.loc, distintos e s/exec são médias por execução.
+
+SA: aceitação de pioras (mediana) na janela        1     10     25     50     75     90    100
+----------------------------------------------------------------------------------------------
+pequena                                        0.877  0.775  0.603  0.167  0.020  0.004  0.002
+media                                          0.862  0.788  0.568  0.183  0.031  0.008  0.002
+grande                                         0.868  0.787  0.567  0.188  0.037  0.015  0.006
+Cada janela tem B/100 passos; a janela 1 é o início da execução e a 100, o fim.
+
+AG: permutações distintas na população (mediana)           0%       1%      10%      25%      50%     100%
+----------------------------------------------------------------------------------------------------------
+pequena                                                  50.0     42.0     11.0      9.0     13.0     12.0
+media                                                   100.0     98.0     42.0     15.0     22.0     22.0
+grande                                                  100.0     96.0     61.0     43.0     29.0     22.0
+
+AG: distância média entre pares (posições) (mediana)       0%       1%      10%      25%      50%     100%
+----------------------------------------------------------------------------------------------------------
+pequena                                                  10.8      7.8      1.7      2.2      3.1      2.4
+media                                                    49.0     44.1     10.8      7.9      6.9      9.0
+grande                                                  149.0    113.7     43.0     33.6     35.1     21.0
+
+AG: h médio da população (mediana)                         0%       1%      10%      25%      50%     100%
+----------------------------------------------------------------------------------------------------------
+pequena                                                7779.9   2869.3   2137.2   2081.3   2160.8   2115.0
+media                                                159988.4  93407.6  27069.3  20024.2  19706.3  20044.8
+grande                                              1266219.6 708312.3 300022.9 184659.2 131260.3  99601.4
+
+Colunas: fração das gerações completadas (0% = população inicial).

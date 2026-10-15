@@ -1,0 +1,39 @@
+instância config                             exec     mín   mediana     média     máx ≤ ref   passos  ót.loc distintos  s/exec
+------------------------------------------------------------------------------------------------------------------------------
+pequena   ag/headless/insertion                30    1875    1937.0    2003.6    2352     9        -       -         -     0.7
+pequena   ag/padrao/insertion/memetico         30    1875    1875.0    1875.0    1875    30        -       -         -     0.2
+pequena   ag/padrao/insertion/ox               30    1875    1937.0    2025.8    2352    12        -       -         -     0.7
+pequena   ag/padrao/insertion/pmx              30    1875    1937.0    2030.5    2757    11        -       -         -     0.8
+pequena   ag/padrao/insertion/so-mutacao       30    1875    1937.0    2121.5    2783     8        -       -         -     0.4
+media     ag/headless/insertion                30   38624   47168.5   47629.9   57438     0        -       -         -     5.3
+media     ag/padrao/insertion/memetico         30   16234   17125.0   17277.6   18849     1        -       -         -     1.6
+media     ag/padrao/insertion/ox               30   16704   19378.0   19599.3   23983     0        -       -         -     3.9
+media     ag/padrao/insertion/pmx              30   16568   19522.5   19556.5   24418     0        -       -         -     4.2
+media     ag/padrao/insertion/so-mutacao       30   16530   20409.0   20418.5   24581     0        -       -         -     2.5
+grande    ag/headless/insertion                10  488686  515206.5  520045.9  543634     0        -       -         -    27.4
+grande    ag/padrao/insertion/memetico         10   74459   81773.5   82299.9   91390     0        -       -         -     7.2
+grande    ag/padrao/insertion/ox               10   79975   94252.0   93352.9  107952     0        -       -         -    17.4
+grande    ag/padrao/insertion/pmx              10   84956   96107.0   95930.4  105508     0        -       -         -    19.0
+grande    ag/padrao/insertion/so-mutacao       10   87646   91014.0   94069.8  110033     0        -       -         -    11.1
+
+≤ ref: execuções que atingiram ou superaram o valor de referência da Tabela 1. passos, ót.loc, distintos e s/exec são médias por execução.
+
+AG: permutações distintas na população (mediana)           0%       1%      10%      25%      50%     100%
+----------------------------------------------------------------------------------------------------------
+pequena                                                  50.0     39.0     12.0     11.0     11.5     11.0
+media                                                   100.0     98.0     43.5     32.0     24.0     25.5
+grande                                                  100.0     97.0     72.5     42.0     30.0     27.5
+
+AG: distância média entre pares (posições) (mediana)       0%       1%      10%      25%      50%     100%
+----------------------------------------------------------------------------------------------------------
+pequena                                                  11.0      7.6      2.7      2.3      2.4      2.2
+media                                                    49.1     44.1     19.4     14.0      9.0     10.0
+grande                                                  149.1    127.7     59.2     42.8     38.3     28.1
+
+AG: h médio da população (mediana)                         0%       1%      10%      25%      50%     100%
+----------------------------------------------------------------------------------------------------------
+pequena                                                7762.5   3818.9   2291.8   2171.7   2194.3   2171.5
+media                                                160466.8 103726.4  36812.7  25282.2  23389.4  22869.5
+grande                                              1270405.2 933843.7 366985.6 194626.1 131301.8 104488.0
+
+Colunas: fração das gerações completadas (0% = população inicial).

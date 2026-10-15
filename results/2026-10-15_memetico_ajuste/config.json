@@ -1,0 +1,66 @@
+{
+  "suite": "memetico_ajuste",
+  "data": "2026-10-15T09:40:15",
+  "git_commit": "7bd25eb",
+  "base_seed": 990000,
+  "regra_seed": "base_seed + 1000 * indice_instancia + run",
+  "instancias": [
+    "media",
+    "grande"
+  ],
+  "orcamento": {
+    "media": 150000,
+    "grande": 300000
+  },
+  "execucoes": {
+    "media": 10,
+    "grande": 10
+  },
+  "celulas": [
+    {
+      "algoritmo": "ag",
+      "variante": "padrao",
+      "vizinhanca": "insertion",
+      "rotulo": "memetico-pls0.02",
+      "params": {
+        "p_ls": 0.02
+      },
+      "problema": {},
+      "fator_orcamento": 1.0,
+      "descontar_calibracao": false,
+      "instancias": null
+    },
+    {
+      "algoritmo": "ag",
+      "variante": "padrao",
+      "vizinhanca": "insertion",
+      "rotulo": "memetico-pls0.1",
+      "params": {
+        "p_ls": 0.1
+      },
+      "problema": {},
+      "fator_orcamento": 1.0,
+      "descontar_calibracao": false,
+      "instancias": null
+    },
+    {
+      "algoritmo": "ag",
+      "variante": "padrao",
+      "vizinhanca": "insertion",
+      "rotulo": "memetico-pls0.5",
+      "params": {
+        "p_ls": 0.5
+      },
+      "problema": {},
+      "fator_orcamento": 1.0,
+      "descontar_calibracao": false,
+      "instancias": null
+    }
+  ],
+  "total_execucoes": 60,
+  "processos": 15,
+  "python": "3.12.3",
+  "plataforma": "Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "processador": "x86_64",
+  "cpus": 16
+}

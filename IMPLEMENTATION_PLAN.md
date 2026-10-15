@@ -10,11 +10,11 @@
 
 ## 1. Current Implementation Status
 
-**Phase:** Phase 1 — build. Plan rev 1 and the delivery schedule (§11) approved 2026-10-14. M0–M2 merged 2026-10-14; M3 (greedy descent + runner + T2) in review (PR #4); M4 (SA) in review (PR #5, stacked on #4); M5 (GA) in review, stacked on #5; M6–M9 pending.
+**Phase:** Phase 1 — build. Plan rev 1 and the delivery schedule (§11) approved 2026-10-14. M0–M2 merged 2026-10-14; M3 (greedy descent + runner + T2) in review (PR #4); M4 (SA) in review (PR #5, stacked on #4); M3–M5 merged 2026-10-15. M6 (T3 + extra + V2 items pulled forward) in review; M7–M9 pending.
 
 | # | Component | Status | Tested? | Notes |
 |---|---|---|---|---|
-| C0 | Project scaffolding (`pyproject.toml`, `uv.lock`, `Makefile`, package layout) | 🟡 In progress | `uv sync --locked`, ruff, pytest green; CI workflow `.github/workflows/ci.yml` | M1: hatchling backend (local uv 0.6.12 predates `uv_build`); Makefile has `setup test lint verify t2 calibrate sa-piloto ag-piloto ag-ajuste ox-demo`, the other targets land with their missions |
+| C0 | Project scaffolding (`pyproject.toml`, `uv.lock`, `Makefile`, package layout) | 🟡 In progress | `uv sync --locked`, ruff, pytest green; CI workflow `.github/workflows/ci.yml` | M1: hatchling backend (local uv 0.6.12 predates `uv_build`); Makefile has `setup test lint verify t2 calibrate sa-piloto ag-piloto ag-ajuste ox-demo memetico-ajuste experiments extra robustez tempos`, the other targets land with their missions |
 | C1 | `Problem` interface + `Move` type | ✅ Done (M2) | Exercised through C2/C5 tests | `src/tp2/core/interface.py`; AST test `tests/test_arquitetura.py` forbids `tp2.problem` imports in `tp2/algorithms` (checked to fail on a planted import) |
 | C2 | `CountingProblem` (budget, counter, best-so-far trace) | ✅ Done (M2) | B calls succeed and B+1 raises; mid-scan stop; `best_s` re-evaluates to `best_h`; non-evaluating methods don't count (`tests/test_counting.py`) | Stores only improvement events `(evals, best_h)`; the runner writes them to `curvas.csv`; any fixed grid (e.g. 201 points) is derived in C11 |
 | C3 | Instance loader | ✅ Done (M1) | n, Σp, base, symmetric T, no .5 ties (`tests/test_instance.py`) | `src/tp2/problem/instance.py` |
@@ -24,10 +24,10 @@
 | C7 | Greedy descent + random restart (3 variants) | ✅ Done (M3) | Exact budget for 3 variants × 3 neighborhoods; every complete `best`/`first` descent re-checked as a true local optimum; same seed → same trace; summary == telemetry (`tests/test_greedy_descent.py`) | `src/tp2/algorithms/greedy_descent.py`; per-descent telemetry (h, permutation signature, steps, complete or cut by budget) through `core/recorder.py` |
 | C8 | Simulated annealing + SA calibration script | ✅ Done (M4) | α takes T0 to Tf on the last level; exact budget; windows and T monotone; T → 0 gives no accepted worsening, T → ∞ accepts all; same seed → same run; calibration formulas; runner reads the versioned calibration (`tests/test_simulated_annealing.py`) | `src/tp2/algorithms/simulated_annealing.py`, `src/tp2/experiments/calibrate_sa.py` → `configs/sa_*.json` + `configs/sa_calibracao.txt`. Pilot `results/2026-10-15_sa_piloto/` (3 runs/instance): worsening acceptance ≈ 0.87 in the first window → 0.002–0.006 in the last |
 | C9 | Genetic algorithm (+ diversity logging) | ✅ Done (M5) | Exact budget (both variants); evaluations per generation = N + g(N − e); best h never worsens (elitism); Pc = Pm = 0 never increases diversity; same seed → same run (`tests/test_genetic.py`) | `src/tp2/algorithms/genetic.py`; variants `padrao` and `headless` (extra experiment); mutation-only = `padrao` with Pc = 0. Diversity sampled on 50 pairs/generation with its own RNG; telemetry time excluded from `wall_s`. Pilot `results/2026-10-15_ag_piloto/`; parameter pilot `results/2026-10-15_ag_ajuste/` kept the defaults |
-| C10 | Experiment runner (parallel, seeded, CSV) | 🟡 Suites `t2` (M3), `sa_piloto` (M4), `ag_piloto` and `ag_ajuste` (M5) done | Seed rule, invariants, end-to-end run with interrupted `--resume` (`tests/test_runner.py`) | `src/tp2/experiments/{runner,configs,resumo}.py`. SA parameters resolved per instance from `configs/sa_*.json` (α recomputed from B). Cells carry a `rotulo` (label) so one algorithm can run with several parameter sets. Suites `t3`/`extra` arrive with M6 |
+| C10 | Experiment runner (parallel, seeded, CSV) | ✅ Done (M3–M6) | Seed rule, invariants, end-to-end run with interrupted `--resume` (`tests/test_runner.py`); suite composition and budgets (`tests/test_suites.py`) | `src/tp2/experiments/{runner,configs,resumo}.py`. Cells carry a label, problem options (crossover), a budget factor, an optional SA-calibration discount and an instance filter. Suites: `t2`, `sa_piloto`, `ag_piloto`, `ag_ajuste`, `memetico_ajuste`, `t3`, `extra`, `robustez`, `tempos` |
 | C11 | Analysis: stats tables, boxplots, convergence, acceptance, diversity | ⬜ Not started | — | |
 | C12 | `verify` command (T1 output for the report) | ✅ Done (M1) | `make verify` exits 0; output in `results/verify.txt` | Computes h* = 1875 by exact DP instead of only quoting it |
-| C13 | Extra experiment: does crossover help? | ⬜ Not started | — | |
+| C13 | Extra experiment: does crossover help? | ✅ Run (M6) | PMX worked example + hypothesis properties; memetic GA exact budget (`tests/test_suites.py`) | `make extra` → `results/2026-10-15_extra/`: GA-OX, mutation-only (Pc = 0), headless chicken, GA-PMX and memetic GA (p_ls = 0.1). Statistical tests in M7 |
 | C14 | Report (`relatorio/`, LaTeX) | ⬜ Not started | — | |
 | C15 | Delivery packaging (README reproduction table, zip) | ⬜ Not started | — | |
 
@@ -36,6 +36,14 @@
 - Σp = 55 / 239 / 684 ✅ (matches statement §1.3 table).
 - Fig. 1 toy instance reconstructed: base (0,0), 1=(3,4), 2=(6,0), 3=(0,8), 4=(6,8) (p, d, w from the figure). h(1,4,2,3) = **39**, unique optimum (1,4,3,2) = **22** ✅.
 - Statement's greedy value **3168** is reproduced only with the rule "min immediate tardiness increment; tie → min travel time; tie → lowest index". Nearest-neighbour gives **2590**.
+- **T3 + extra + robustness (M6, commit `7bd25eb`, every run ok; T3 63 s, extra 110 s, robustness 131 s on 15 processes):** medians of best h.
+  - T3 pequena: GD (all 3 variants) and SA reach 1 875 in 30/30; GA 12/30 (median 1 937).
+  - T3 media: SA 17 047 · GD-random 17 366 · GD-first 17 457.5 · GA 19 378 · GD-best 20 054.5.
+  - T3 grande: SA 80 832.5 · GD-random 80 906.5 · GD-first 82 796.5 · GA 94 252 · GD-best 818 369.5 (only 13 improvement steps: one step costs 22 201 evaluations).
+  - **Below the media reference 16 332:** SA 16 269, memetic GA 16 234, GD-random 16 306 (independently re-evaluated).
+  - Extra, media: memetic 17 125 · OX 19 378 · PMX 19 522.5 · mutation-only 20 409 · headless 47 168.5; grande: memetic 81 773.5 · mutation-only 91 014 · OX 94 252 · PMX 96 107 · headless 515 206.5. Headless keeps both OX children of (selected parent, random permutation), so half of each child comes from noise.
+  - Robustness: SA with B − 4 000: media 17 113, grande 82 246 (vs 17 047 / 80 832.5 with B). 2B, media: GD-first 16 645 · SA 16 778.5 · GD-random 16 903 · GD-best 18 516.5 · GA 19 378 (identical to B: no GA run improves after evaluation 149 783); grande: SA 76 488.5 · GD-first 77 827.5 · GD-random 80 906.5 · GA 87 624 · GD-best 575 848.
+  - Sequential timing (`results/2026-10-15_tempos/`, s/run at n = 150): GD 3.4–3.9, SA 6.0, GA 8.4.
 - **GA pilots (M5):** default GA (N = 50/100/100, Pc = 0.9, Pm = 0.2, k = 3, e = 2), 3 runs: median 1 937 / 18 610 / 97 014, the weakest of the three algorithms in the pilots. Diversity collapses early: distinct permutations at 10% of the generations = 11 / 42 / 61, mean pair distance 1.8 / 13.6 / 46.6 positions. Parameter pilot on media (10 runs, seeds outside the protocol): N ∈ {50, 100, 200} × Pm ∈ {0.2, 0.5, 1.0} medians 19 297–21 254 with wide spread, no setting clearly better → defaults kept.
 - **Incremental evaluation timing** (`python -m tp2.experiments.tempo_movimentos`, 20 solutions × 5000 random moves): gain 1.0–1.2× at n = 12, 1.25–1.33× at n = 50, 1.38–1.44× at n = 150 (≈ 10 µs per successor at n = 150 for all three operators). Definitive table: `results/2026-10-15_t2/tempo_movimentos.csv`.
 - **T2 (M3, `make t2` → `results/2026-10-15_t2/`, commit `a3be940`, 210/210 runs ok, 31 s on 15 processes):** first-improvement GD + RR. Pequena: all 3 neighborhoods reach h* = 1875 in 30/30 runs; distinct local optima per run: swap 112.8, 2-opt 47.1, insertion 16.9. Median best h — media: insertion 17 457.5, 2-opt 18 468, swap 24 252; grande: insertion 82 796.5, 2-opt 89 078.5, swap 150 118. At n = 150 a run completes only 1.4–2.5 descents (scale effect for the report). **Insertion adopted** for GD, SA and GA mutation (`configs.VIZINHANCA`, CONTEXT §8).
@@ -70,11 +78,15 @@ The three algorithms are deliberately different in how they spend evaluations. G
 - T1, T2 (neighborhood comparison), T3 (main experiments) and the extra "GA pays off?" experiment.
 - Report (PDF, ~5 pages plus appendices, no code in the body) and README with one command per table and figure.
 
+**Pulled forward into v1 on 2026-10-15 (ahead of schedule; Bruno's choice), run in M6:**
+- PMX crossover and the GA-PMX arm of the extra experiment.
+- The SA sensitivity check: SA with B minus the calibration evaluations (suite `robustez`).
+- A memetic GA (GA + first-improvement descent on each child with probability p_ls = 0.1) as an arm of the extra experiment, not as a fourth main algorithm.
+- The three algorithms with a doubled budget (2B) on media and grande (suite `robustez`).
+
 **Explicitly deferred (Phase 2+, only if time is left):**
-- PMX crossover and the GA-PMX arm of the extra experiment (cut 2026-10-14 for the 18/10 deadline; OX is the class operator and is enough for §2.5).
-- The SA sensitivity check that counts calibration samples in B. The report only states that calibration was done offline, as hyperparameter tuning.
+- Sensitivity of the K factor of the GD `random` variant.
 - Numba/NumPy acceleration. Pure Python is fast enough (§1 benchmark). Revisit only if T2 plus calibration sweeps get slow.
-- A memetic GA (GA + local search). Interesting, but it's a fourth algorithm the statement doesn't ask for. It could be a sentence in the discussion.
 - Adaptive / reheating SA schedules. Geometric cooling is what the statement suggests and what the class covered.
 - Differential Evolution (Part 3 slides). It's for continuous problems and isn't part of TP2.
 
@@ -638,10 +650,10 @@ This project has no external services at runtime. The "integrations" are the loc
 | 6 | Incremental eval suffix early-exit (δ = 0 after last touched position) | Deferred | Only if T2 timing shows evaluation dominates |
 | 7 | SA calibration evaluations not counted in B | Low risk | Decided 2026-10-14: disclose in the report as offline hyperparameter tuning. Cost measured in M4: 4 000 evaluations per instance (8% / 2.7% / 1.3% of B), once per instance. The sensitivity check is deferred (§3) |
 | 8 | GA counts unchanged clones as evaluations | Low risk | Conservative choice; mention it. An alternative cache would favor the GA slightly |
-| 9 | Wall time measured under parallel load | Low risk | Also time 3 sequential runs per cell for the time table |
+| 9 | Wall time measured under parallel load | ✅ Resolved 2026-10-15 | `make tempos` → `results/2026-10-15_tempos/`: the T3 cells, 3 runs per instance, 1 process. The time table uses these |
 | 10 | Delivery format | ✅ Resolved 2026-10-14 | Clean zip (`make zip`), no agent-protocol files (§7.3) |
 | 11 | Greedy 3168 depends on an unstated tie-break | Low risk | Documented (tie → min travel time); cite it in the report as our reproduction |
-| 12 | Which GD variant represents algorithm (A) in the main table | Open | Decide after T3 pilot on media: the best median under budget; all variants in the appendix |
+| 12 | Which GD variant represents algorithm (A) in the main table | ✅ Resolved 2026-10-15 | Rule applied to T3: best median on media → `random` (17 366 vs `first` 17 457.5, `best` 20 054.5). All variants go in the appendix table; M7 tests whether random vs first differ |
 
 ---
 
