@@ -1,0 +1,74 @@
+{
+  "suite": "ag_ajuste",
+  "data": "2026-10-15T01:51:07",
+  "git_commit": "7c62b1c",
+  "base_seed": 990000,
+  "regra_seed": "base_seed + 1000 * indice_instancia + run",
+  "instancias": [
+    "media"
+  ],
+  "orcamento": {
+    "media": 150000
+  },
+  "execucoes": {
+    "media": 10
+  },
+  "celulas": [
+    {
+      "algoritmo": "ag",
+      "variante": "padrao",
+      "vizinhanca": "insertion",
+      "rotulo": "N100-Pm0.2",
+      "params": {
+        "N": 100,
+        "Pm": 0.2
+      }
+    },
+    {
+      "algoritmo": "ag",
+      "variante": "padrao",
+      "vizinhanca": "insertion",
+      "rotulo": "N100-Pm0.5",
+      "params": {
+        "N": 100,
+        "Pm": 0.5
+      }
+    },
+    {
+      "algoritmo": "ag",
+      "variante": "padrao",
+      "vizinhanca": "insertion",
+      "rotulo": "N100-Pm1.0",
+      "params": {
+        "N": 100,
+        "Pm": 1.0
+      }
+    },
+    {
+      "algoritmo": "ag",
+      "variante": "padrao",
+      "vizinhanca": "insertion",
+      "rotulo": "N50-Pm0.2",
+      "params": {
+        "N": 50,
+        "Pm": 0.2
+      }
+    },
+    {
+      "algoritmo": "ag",
+      "variante": "padrao",
+      "vizinhanca": "insertion",
+      "rotulo": "N200-Pm0.2",
+      "params": {
+        "N": 200,
+        "Pm": 0.2
+      }
+    }
+  ],
+  "total_execucoes": 50,
+  "processos": 15,
+  "python": "3.12.3",
+  "plataforma": "Linux-5.15.153.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "processador": "x86_64",
+  "cpus": 16
+}

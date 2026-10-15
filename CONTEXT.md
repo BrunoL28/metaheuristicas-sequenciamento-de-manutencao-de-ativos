@@ -169,6 +169,7 @@ For each asset *j*: position (x_j, y_j), service duration p_j (hours), regulator
 | 2026-10-14 | Code delivered as a clean zip (`make zip`), without agent-protocol files | Statement allows zip or Git repo | Bruno |
 | 2026-10-15 | **Insertion** is the neighborhood for GD and SA in T3 and the GA mutation move | T2 (`results/2026-10-15_t2/`): best median on media (17 457.5 vs 18 468 2-opt, 24 252 swap) and grande (82 796.5 vs 89 078.5, 150 118); 30/30 optimal on pequena like the others; same cost per move (≈ 10 µs at n = 150) | T2 data; group confirms at PR review |
 | 2026-10-15 | SA calibration: T0 and Tf both from one sample of 2 000 random (solution, successor) pairs; T0 = −median(Δ⁺)/ln 0.9, Tf = −q10(Δ⁺)/ln 10⁻³; L = 100/300/1000; α from B | The planned Tf from Δ⁺ around local optima cost 503k evaluations on grande (> B) and an exploratory pilot (seeds outside the protocol) didn't favour it (grande median 89 576 vs 83 464). Pilot `results/2026-10-15_sa_piloto/` shows acceptance ≈ 0.87 → ≈ 0.004, as the statement asks | M4; group confirms at PR review |
+| 2026-10-15 | GA keeps the plan defaults: N = 50/100/100, tournament k = 3, Pc = 0.9 per pair, Pm = 0.2 per child (one insertion move), elitism 2, OX with the slide convention | Parameter pilot on media (`results/2026-10-15_ag_ajuste/`, 10 runs per setting, seeds outside the protocol): no N/Pm setting clearly better (medians 19 297–21 254, wide spread) | M5; group confirms at PR review |
 
 ## 9. Open questions
 

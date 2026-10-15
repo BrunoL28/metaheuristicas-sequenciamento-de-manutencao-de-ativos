@@ -11,6 +11,7 @@ from collections.abc import Iterator, Sequence
 
 from tp2.problem.instance import Instance
 from tp2.problem.neighborhoods import VIZINHANCAS, Mov
+from tp2.problem.operators import cruzamento_ox
 
 
 class MaintenanceProblem:
@@ -143,6 +144,16 @@ class MaintenanceProblem:
 
     def tamanho_vizinhanca(self) -> int:
         return self.viz.tamanho(self.n)
+
+    def cruzamento(
+        self, s1: Sequence[int], s2: Sequence[int], rng: random.Random
+    ) -> tuple[list[int], list[int]]:
+        """OX na convenção do slide (``tp2.problem.operators``). Não avalia."""
+        return cruzamento_ox(s1, s2, rng)
+
+    def mutacao(self, s: Sequence[int], rng: random.Random) -> list[int]:
+        """Aplica um movimento aleatório da vizinhança configurada. Não avalia."""
+        return self.viz.aplicar(s, self._movimentos[rng.randrange(len(self._movimentos))])
 
     def distancia(self, s1: Sequence[int], s2: Sequence[int]) -> int:
         """Número de posições com ativos diferentes (Hamming por posição)."""

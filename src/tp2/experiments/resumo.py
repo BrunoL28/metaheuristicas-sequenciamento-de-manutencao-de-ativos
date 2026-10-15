@@ -28,13 +28,19 @@ def resumir(pasta: Path) -> str:
 
     grupos: dict[tuple, list[dict]] = defaultdict(list)
     for linha in linhas:
-        chave = (linha["instancia"], linha["algoritmo"], linha["variante"], linha["vizinhanca"])
+        chave = (
+            linha["instancia"],
+            linha["algoritmo"],
+            linha["variante"],
+            linha["vizinhanca"],
+            linha.get("rotulo", ""),
+        )
         grupos[chave].append(linha)
 
     ordem_inst = {nome: k for k, nome in enumerate(configs.INSTANCIAS)}
     saida = []
     cabecalho = (
-        f"{'instância':<9} {'config':<24} {'exec':>4} {'mín':>7} {'mediana':>9} "
+        f"{'instância':<9} {'config':<34} {'exec':>4} {'mín':>7} {'mediana':>9} "
         f"{'média':>9} {'máx':>7} {'≤ ref':>5} {'passos':>8} {'ót.loc':>7} "
         f"{'distintos':>9} {'s/exec':>7}"
     )
@@ -49,9 +55,9 @@ def resumir(pasta: Path) -> str:
             valores = [v for linha in grupo if (v := _num(linha[campo])) is not None]
             return f"{statistics.fmean(valores):.1f}" if valores else "-"
 
-        config = "/".join(chave[1:])
+        config = "/".join(c for c in chave[1:] if c)
         saida.append(
-            f"{chave[0]:<9} {config:<24} {len(hs):>4} {min(hs):>7} "
+            f"{chave[0]:<9} {config:<34} {len(hs):>4} {min(hs):>7} "
             f"{statistics.median(hs):>9.1f} {statistics.fmean(hs):>9.1f} {max(hs):>7} "
             f"{sum(h <= ref for h in hs):>5} {media('passos'):>8} {media('otimos_locais'):>7} "
             f"{media('otimos_distintos'):>9} {media('wall_s'):>7}"
@@ -61,9 +67,49 @@ def resumir(pasta: Path) -> str:
         "≤ ref: execuções que atingiram ou superaram o valor de referência da Tabela 1. "
         "passos, ót.loc, distintos e s/exec são médias por execução."
     )
+    por_id = {linha["run_id"]: linha for linha in linhas}
     if (pasta / "sa_aceitacao.csv").exists():
-        saida += ["", *_aceitacao_sa(pasta, {linha["run_id"]: linha for linha in linhas})]
+        saida += ["", *_aceitacao_sa(pasta, por_id)]
+    if (pasta / "ag_geracoes.csv").exists():
+        saida += ["", *_diversidade_ag(pasta, por_id)]
     return "\n".join(saida)
+
+
+FRACOES_AG = (0.0, 0.01, 0.1, 0.25, 0.5, 1.0)
+
+
+def _diversidade_ag(pasta: Path, runs: dict[str, dict]) -> list[str]:
+    """Mediana entre execuções da diversidade em frações do total de gerações."""
+    series: dict[str, list[dict]] = defaultdict(list)
+    with (pasta / "ag_geracoes.csv").open(newline="") as f:
+        for linha in csv.DictReader(f):
+            if linha["run_id"] in runs:
+                series[linha["run_id"]].append(linha)
+    saida = []
+    for campo, titulo in (
+        ("distintos", "AG: permutações distintas na população"),
+        ("distancia_media", "AG: distância média entre pares (posições)"),
+        ("media_h", "AG: h médio da população"),
+    ):
+        cabecalho = f"{titulo + ' (mediana)':<52}" + "".join(
+            f"{f'{fr:.0%}':>9}" for fr in FRACOES_AG
+        )
+        saida += [cabecalho, "-" * len(cabecalho)]
+        for inst in configs.INSTANCIAS:
+            ids = [rid for rid in series if runs[rid]["instancia"] == inst]
+            if not ids:
+                continue
+            valores = []
+            for fr in FRACOES_AG:
+                pontos = []
+                for rid in ids:
+                    serie = series[rid]
+                    pontos.append(float(serie[round(fr * (len(serie) - 1))][campo]))
+                valores.append(f"{statistics.median(pontos):>9.1f}")
+            saida.append(f"{inst:<52}" + "".join(valores))
+        saida.append("")
+    saida.append("Colunas: fração das gerações completadas (0% = população inicial).")
+    return saida
 
 
 JANELAS_MOSTRADAS = (1, 10, 25, 50, 75, 90, 100)
