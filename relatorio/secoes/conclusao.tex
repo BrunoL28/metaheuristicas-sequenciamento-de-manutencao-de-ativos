@@ -1,0 +1,12 @@
+\section{Conclusão}
+\label{sec:conclusao}
+
+Com orçamento igual e parada exata, a descida gulosa com reinício aleatório e o SA ficaram empatados nas três instâncias, e os dois venceram o AG em todas.
+A vizinhança de inserção foi a melhor das três, com o mesmo custo por movimento das outras.
+Duas lições do experimento valem além deste problema.
+A primeira é que o número de passos de melhoria que cabem no orçamento importa mais que a qualidade de cada passo: a \textit{best improvement} perdeu para variantes que escolhem pior, mas avançam mais.
+A segunda é que, neste problema, o cruzamento não combina blocos bons, porque o custo de um bloco depende da posição em que ele cai na rota; o AG só chegou ao nível das buscas locais quando ganhou uma.
+
+Ficam em aberto duas perguntas que os dados sugerem e não testamos.
+Uma é se um $T_0$ menor tornaria o SA melhor que a descida gulosa na instância grande, onde ele terminou todas as execuções ainda melhorando.
+A outra é se um cruzamento que preserve os instantes de chegada, e não só a ordem, daria ao AG algo que a mutação não dá.

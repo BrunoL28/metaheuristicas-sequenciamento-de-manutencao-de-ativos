@@ -1,0 +1,23 @@
+\section{T2: comparação das vizinhanças}
+\label{sec:t2}
+
+Rodamos a descida gulosa com \textit{first improvement} nas três vizinhanças, com o orçamento e o número de execuções do protocolo e as mesmas sementes.
+Usamos essa variante porque ela chega a ótimos locais em todas as instâncias dentro do orçamento; a \textit{best improvement} quase não sai do lugar na grande (Seção~\ref{sec:discussao}).
+
+\begin{table}[tbp]
+  \centering
+  \caption{T2: tamanho da vizinhança, mediana do melhor $h$ por instância e tempo por avaliação de sucessor em $n = 150$ (completa $\to$ incremental).}
+  \label{tab:t2}
+  \tabela{t2_vizinhancas}
+\end{table}
+
+Na pequena, as três vizinhanças acham o ótimo em todas as execuções.
+Nas outras duas, a inserção dá os melhores ótimos locais: mediana de 17\,457,5 na média e 82\,796,5 na grande, contra 18\,468 e 89\,078,5 do 2-opt e 24\,252 e 150\,118 da troca.
+As duas diferenças da inserção são significativas nas duas instâncias ($p$ com Holm de $6{,}8\times10^{-5}$ e $0{,}009$ contra o 2-opt, e de $6{,}0\times10^{-11}$ e $3{,}7\times10^{-4}$ contra a troca; Tabela~\ref{tab:t2-testes}, no apêndice).
+O custo por movimento praticamente não separa as vizinhanças: com avaliação incremental, as três ficam entre 9,1 e 9,7\,µs por sucessor em $n = 150$.
+A troca tem o maior ganho incremental (1,45 vezes), mas o que ela economiza em tempo perde em qualidade.
+
+Uma explicação plausível para a vantagem da inserção está na estrutura do custo.
+Atrasar ou adiantar um único ativo, sem mexer na ordem relativa dos demais, é o ajuste mais natural quando uma rota boa tem um ativo urgente fora do lugar.
+A troca desloca dois ativos de uma vez, e o 2-opt inverte a ordem de um trecho inteiro, o que, ao contrário do caixeiro-viajante simétrico, muda os instantes de conclusão de todos os ativos do trecho.
+Adotamos a inserção na descida gulosa, no SA e na mutação do AG.

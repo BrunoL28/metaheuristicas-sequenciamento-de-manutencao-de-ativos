@@ -173,6 +173,7 @@ For each asset *j*: position (x_j, y_j), service duration p_j (hours), regulator
 | 2026-10-15 | V2 items pulled into v1: PMX arm, memetic GA arm, SA with B minus calibration, 2B for all algorithms on media/grande | Ahead of schedule | Bruno |
 | 2026-10-15 | Memetic GA = first-improvement descent on each child with probability p_ls = 0.1 | Pilot `results/2026-10-15_memetico_ajuste/` (seeds outside the protocol): p_ls 0.1 best on media (16 816) and grande (78 443). A first design (a few random successor samples per child) didn't improve the GA and was dropped | M6 |
 | 2026-10-15 | Algorithm (A) in the main table = GD `random` variant | Plan rule (best median on media in T3): 17 366 vs `first` 17 457.5 and `best` 20 054.5; the three variants go in the appendix | M6; group confirms at PR review |
+| 2026-10-15 | Report: 10 pt, 2 cm margins, body ≈ 7 pages (statement suggests ~5) + appendices; authors Arthur Fernandes and Bruno Lima (Felipe pending) | The extra experiment and the robustness checks need the space; the SA calibration table, T2 tests, memetic-vs-local tests, robustness, GA parameters, best solutions and reproduction commands went to the appendices | Bruno, 2026-10-15: the 5 pages are a suggestion and exceeding by 1–2 pages (appendices excluded) is fine given the number of analyses |
 
 ## 9. Open questions
 

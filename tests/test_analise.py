@@ -50,7 +50,7 @@ def test_gera_todas_as_tabelas_e_figuras(tmp_path):
     main(["--tabelas", str(tmp_path / "tab"), "--figuras", str(tmp_path / "fig")])
     tabelas = sorted(p.name for p in (tmp_path / "tab").iterdir())
     figuras = sorted(p.name for p in (tmp_path / "fig").iterdir())
-    assert len(tabelas) == 11 and len(figuras) == 6
+    assert len(tabelas) == 14 and len(figuras) == 6
     assert (tmp_path / "melhores_solucoes.txt").exists()
     principal = (tmp_path / "tab" / "principal.tex").read_text()
     assert "\\begin{tabular}" in principal and "30/30" in principal

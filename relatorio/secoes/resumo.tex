@@ -1,0 +1,11 @@
+\begin{abstract}
+\noindent
+Comparamos três metaheurísticas no sequenciamento de manutenção de $n$ ativos por uma única equipe, com custo igual ao atraso total ponderado: descida gulosa com reinício aleatório, \textit{simulated annealing} (SA) e um algoritmo genético (AG).
+Todas usam a mesma interface e o mesmo orçamento de avaliações de $h$, com parada exata, em três instâncias ($n = 12$, $50$ e $150$).
+A vizinhança de inserção venceu a troca e o 2-opt e foi adotada.
+A descida gulosa e o SA ficaram estatisticamente empatados nas três instâncias e venceram o AG em todas elas (Mann--Whitney com correção de Holm, $p \le 0{,}015$).
+Na instância pequena, as duas buscas locais acharam o ótimo $h^* = 1\,875$ em 30 de 30 execuções; o AG, em 12.
+O AG perde diversidade cedo: na instância média nenhuma execução melhora depois da metade do orçamento.
+No experimento extra, trocar o cruzamento OX por PMX, por mutação pura ou por cruzamento com indivíduos aleatórios não melhorou o AG; só a busca local nos filhos (AG memético) o levou ao nível das buscas locais, sem superá-las.
+Na instância média, o AG memético encontrou $h = 16\,234$, abaixo do melhor valor conhecido (16\,332).
+\end{abstract}

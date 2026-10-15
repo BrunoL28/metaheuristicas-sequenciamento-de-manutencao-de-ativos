@@ -1,0 +1,35 @@
+\section{Introdução}
+\label{sec:introducao}
+
+Uma equipe parte da base em $(50, 50)$ e precisa visitar $n$ ativos da rede de distribuição, cada um com tempo de serviço $p_j$, prazo regulatório $d_j$ e peso $w_j$~\citep{enunciado2026tp2}.
+O deslocamento entre dois pontos leva a distância euclidiana arredondada, e não há retorno à base.
+Uma solução é a ordem de visita, uma permutação $\pi$ dos ativos, e o custo é o atraso total ponderado
+\begin{equation}
+  h(\pi) = \sum_{j=1}^{n} w_j \max\left(0,\; C_j - d_j\right),
+  \label{eq:custo}
+\end{equation}
+em que $C_j$ é o instante em que o serviço do ativo $j$ termina.
+Toda permutação é viável, então o problema é de otimização pura sobre $n!$ pontos, com $4{,}8 \times 10^{8}$ soluções já na instância pequena.
+
+O enunciado fixa o orçamento $B$ de avaliações de $h$ e o número de execuções independentes de cada instância (Tabela~\ref{tab:instancias}).
+Os dois critérios gulosos naturais puxam em direções opostas: visitar o mais próximo economiza deslocamento, e visitar o mais urgente evita multa.
+O guloso do enunciado, que escolhe o menor acréscimo imediato de atraso, chega a $3\,168$ na instância pequena, 69\% acima do ótimo.
+
+\begin{table}[tbp]
+  \centering\small
+  \caption{Instâncias, orçamento e valores de referência do enunciado. Só o valor da pequena é ótimo comprovado.}
+  \label{tab:instancias}
+  \begin{tabular}{lrrrrr}
+    \toprule
+    Instância & $n$ & $\sum p_j$ & Orçamento $B$ & Execuções & $h_{\mathrm{ref}}$ \\
+    \midrule
+    pequena & 12 & 55 & 50\,000 & 30 & 1\,875 (ótimo) \\
+    média & 50 & 239 & 150\,000 & 30 & 16\,332 \\
+    grande & 150 & 684 & 300\,000 & 10 & 60\,417 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+A Seção~\ref{sec:implementacao} descreve as decisões de implementação que afetam a comparação.
+As Seções~\ref{sec:t1} a~\ref{sec:t3} trazem as tarefas T1 a T3, e a Seção~\ref{sec:discussao} responde às quatro perguntas obrigatórias, incluindo o experimento extra.
+Os comandos que reproduzem cada tabela e figura estão no Apêndice~\ref{ap:reproducao}.

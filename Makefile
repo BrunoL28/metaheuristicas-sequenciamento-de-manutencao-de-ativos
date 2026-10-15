@@ -1,4 +1,4 @@
-.PHONY: setup test lint verify t2 calibrate sa-piloto ag-piloto ag-ajuste ox-demo memetico-ajuste experiments extra robustez tempos analysis tables figures
+.PHONY: setup test lint verify t2 calibrate sa-piloto ag-piloto ag-ajuste ox-demo memetico-ajuste experiments extra robustez tempos analysis tables figures report overleaf
 
 export MPLBACKEND = Agg
 
@@ -93,6 +93,17 @@ analysis:
 	uv run python -m tp2.analysis
 
 tables figures: analysis
+
+report:
+	@echo "Compilando o relatório (pdfLaTeX)..."
+	cd relatorio && latexmk -pdf main.tex
+
+overleaf:
+	@echo "Empacotando relatorio/ para upload no Overleaf (arquivos do último commit)..."
+	@mkdir -p tmp
+	@git diff --quiet HEAD -- relatorio || echo "Aviso: relatorio/ tem mudanças não commitadas; o zip usa o último commit."
+	git archive --format=zip -o tmp/relatorio-overleaf.zip HEAD:relatorio
+	@echo "Pronto: tmp/relatorio-overleaf.zip (Overleaf: New Project > Upload Project)"
 
 ox-demo:
 	@echo "Exemplo passo a passo do cruzamento OX (para o relatório)..."

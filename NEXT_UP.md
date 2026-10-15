@@ -9,16 +9,13 @@ _Last updated: 2026-10-15_
 ## 🔴 Blockers
 
 - [ ] Arthur must accept the repo invite (`EluriaTecnologia`, write) to review PRs.
-- [ ] Before M8 (17/10): Bruno installs TeX Live → `! sudo apt install latexmk texlive-latex-extra texlive-lang-portuguese texlive-science`.
 
 ## 🟡 In progress
 
-- [ ] **M6** T3 + extra + robustness: PR #7 (`exp/t3-extra`), CI green, awaiting review. Group: confirm GD-`random` as algorithm (A) and the memetic design (CONTEXT §8).
-- [ ] **M7** Analysis: PR (`feat/analise`, stacked on #7), awaiting review. Group: review the numbers before the report (plan §1, "Statistics").
+- [ ] **M8** Report draft: PR (`docs/relatorio`), awaiting review. Group: read `relatorio/main.pdf` (`make report`), confirm Felipe (cover); length is fine (body ≈ 7 pages, Bruno accepts 5 + 1–2); then upload `make overleaf` to Overleaf.
 
 ## 🟢 This week / next
 
-- [ ] 17/10 **M8** Report (`docs/relatorio`).
 - [ ] 17/10 **M9** Delivery README + clean zip (`chore/entrega`).
 - [ ] Confirm whether Felipe Augusto joins the group (report cover, README).
 - [ ] Confirm the submission channel (Moodle?).
@@ -31,6 +28,8 @@ _Last updated: 2026-10-15_
 
 ## ✅ Recently done (last 2 weeks)
 
+- 2026-10-15 — M8 draft: full report in PT-BR (`relatorio/`), 11 pages (body ≈ 7), compiled locally with TeX Live; new generated inputs `ox_exemplo.tex`, `extra_vs_buscas.tex`, `verify.txt` (memetic GA ties both local searches: p_Holm = 1.000). `make report`, `make overleaf`.
+- 2026-10-15 — PRs #7–#8 (M6–M7) merged by Bruno; TeX Live installed.
 - 2026-10-15 — M7: `make analysis` → 11 LaTeX tables + 6 figures + best solutions, from `results/LATEST_*`. GD-random and SA are statistically tied everywhere and both beat the GA; only the memetic arm beats GA-OX; the SA calibration cost is not significant. 114 tests green.
 - 2026-10-15 — M6 (+ V2 items pulled forward): PMX, memetic GA, suites `t3`, `extra`, `robustez`, `tempos`; all runs ok from commit `7bd25eb`. SA has the best median on media and grande; GD-`random` is algorithm (A); three algorithms beat the media reference 16 332 (best 16 234, memetic GA); the GA stagnates on media (no improvement after 150k in 30/30 runs). 108 tests green.
 - 2026-10-15 — PRs #4–#6 (M3–M5) merged by Bruno.
