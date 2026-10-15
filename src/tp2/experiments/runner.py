@@ -17,7 +17,7 @@ Arquivos na pasta de saída:
 - ``runs.csv``: uma linha por execução;
 - ``curvas.csv``: cada melhoria do melhor global (run_id, evals, best_h);
 - um CSV por tabela de telemetria do algoritmo (``otimos_locais.csv`` na
-  descida gulosa, ``sa_aceitacao.csv`` no SA);
+  descida gulosa, ``sa_aceitacao.csv`` no SA, ``ag_geracoes.csv`` no AG);
 - ``config.json``: parâmetros, commit, versão do Python e máquina.
 
 Uso: ``uv run python -m tp2.experiments.runner --suite t2 --out results/<data>_t2``
@@ -39,6 +39,7 @@ from datetime import datetime
 from multiprocessing import Pool
 from pathlib import Path
 
+from tp2.algorithms.genetic import algoritmo_genetico
 from tp2.algorithms.greedy_descent import descida_gulosa
 from tp2.algorithms.simulated_annealing import alfa_para_orcamento, simulated_annealing
 from tp2.core.counting import CountingProblem
@@ -47,7 +48,7 @@ from tp2.experiments import calibrate_sa, configs
 from tp2.problem.instance import RAIZ_PROJETO, load_named
 from tp2.problem.maintenance import MaintenanceProblem
 
-ALGORITMOS = {"gd": descida_gulosa, "sa": simulated_annealing}
+ALGORITMOS = {"gd": descida_gulosa, "sa": simulated_annealing, "ag": algoritmo_genetico}
 
 COLUNAS = [
     "run_id",
@@ -55,6 +56,7 @@ COLUNAS = [
     "algoritmo",
     "variante",
     "vizinhanca",
+    "rotulo",
     "instancia",
     "n",
     "run",
@@ -78,7 +80,9 @@ COLUNAS = [
 
 
 def run_id(job: dict) -> str:
-    partes = (job["algoritmo"], job["variante"], job["vizinhanca"], job["instancia"])
+    partes = [job["algoritmo"], job["variante"], job["vizinhanca"], job["instancia"]]
+    if job.get("rotulo"):
+        partes.insert(3, job["rotulo"])
     return "-".join(partes) + f"-{job['run']:02d}"
 
 
@@ -103,6 +107,7 @@ def montar_jobs(
                     "algoritmo": cel.algoritmo,
                     "variante": cel.variante,
                     "vizinhanca": cel.vizinhanca,
+                    "rotulo": cel.rotulo,
                     "params": params,
                     "instancia": inst,
                     "run": run,
@@ -119,6 +124,9 @@ def montar_jobs(
 def _parametros(cel: configs.Celula, instancia: str, orcamento: int) -> dict:
     """Parâmetros da célula, completados com os que dependem da instância e de B."""
     params = dict(cel.params)
+    if cel.algoritmo == "ag":
+        # Os parâmetros da célula (ex.: Pc = 0 no experimento extra) têm precedência.
+        params = {**configs.AG[instancia], **params}
     if cel.algoritmo == "sa":
         cal = calibrate_sa.carregar(instancia)
         if cal["vizinhanca"] != cel.vizinhanca:
@@ -163,6 +171,7 @@ def executar(job: dict) -> dict:
         "algoritmo": job["algoritmo"],
         "variante": job["variante"],
         "vizinhanca": job["vizinhanca"],
+        "rotulo": job["rotulo"],
         "instancia": job["instancia"],
         "n": inst.n,
         "run": job["run"],
@@ -376,6 +385,7 @@ def _gravar_config(pasta, args, instancias, commit, total, pendentes) -> None:
                     "algoritmo": c.algoritmo,
                     "variante": c.variante,
                     "vizinhanca": c.vizinhanca,
+                    "rotulo": c.rotulo,
                     "params": c.params,
                 }
                 for c in configs.celulas(args.suite)

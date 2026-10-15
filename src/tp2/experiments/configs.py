@@ -23,6 +23,14 @@ VIZINHANCAS = ("swap", "insertion", "2opt")
 # Vale para a descida gulosa e o SA no T3, e é o movimento da mutação do AG.
 VIZINHANCA = "insertion"
 
+# Algoritmo genético: torneio k = 3, Pc por par, Pm por filho (1 movimento
+# da vizinhança escolhida), elitismo de 2. Parada só pelo orçamento.
+AG = {
+    "pequena": {"N": 50, "Pc": 0.9, "Pm": 0.2, "k": 3, "elite": 2},
+    "media": {"N": 100, "Pc": 0.9, "Pm": 0.2, "k": 3, "elite": 2},
+    "grande": {"N": 100, "Pc": 0.9, "Pm": 0.2, "k": 3, "elite": 2},
+}
+
 
 @dataclass(frozen=True)
 class Celula:
@@ -32,6 +40,8 @@ class Celula:
     variante: str
     vizinhanca: str
     params: dict = field(default_factory=dict, hash=False)
+    # Distingue células do mesmo algoritmo e variante com parâmetros diferentes.
+    rotulo: str = ""
 
 
 def semente(instancia: str, run: int, base: int = BASE_SEED) -> int:
@@ -45,7 +55,17 @@ def celulas(suite: str) -> list[Celula]:
     if suite == "sa_piloto":
         # Confere o perfil de aceitação do SA calibrado (configs/sa_*.json).
         return [Celula("sa", "geometrico", VIZINHANCA)]
+    if suite == "ag_piloto":
+        # Confere a configuração padrão do AG (convergência e diversidade).
+        return [Celula("ag", "padrao", VIZINHANCA)]
+    if suite == "ag_ajuste":
+        # Piloto de parâmetros do AG na média, com sementes fora do protocolo
+        # (make ag-ajuste usa outra base de sementes).
+        return [
+            Celula("ag", "padrao", VIZINHANCA, {"N": N, "Pm": Pm}, f"N{N}-Pm{Pm}")
+            for N, Pm in ((100, 0.2), (100, 0.5), (100, 1.0), (50, 0.2), (200, 0.2))
+        ]
     raise ValueError(f"suíte desconhecida: {suite!r}")
 
 
-SUITES = ("t2", "sa_piloto")
+SUITES = ("t2", "sa_piloto", "ag_piloto", "ag_ajuste")

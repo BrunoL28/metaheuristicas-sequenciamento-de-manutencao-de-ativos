@@ -1,10 +1,12 @@
-.PHONY: setup test lint verify t2 calibrate sa-piloto
+.PHONY: setup test lint verify t2 calibrate sa-piloto ag-piloto ag-ajuste ox-demo
 
 export MPLBACKEND = Agg
 
 DATA := $(shell date +%F)
 T2_OUT ?= results/$(DATA)_t2
 SA_PILOTO_OUT ?= results/$(DATA)_sa_piloto
+AG_PILOTO_OUT ?= results/$(DATA)_ag_piloto
+AG_AJUSTE_OUT ?= results/$(DATA)_ag_ajuste
 # JOBS=n limita os processos; RESUME=1 retoma uma pasta interrompida.
 OPCOES = $(if $(JOBS),--jobs $(JOBS)) $(if $(RESUME),--resume)
 
@@ -41,3 +43,18 @@ sa-piloto: verify
 	@echo "Piloto do SA calibrado: perfil de aceitação de pioras (3 execuções por instância)..."
 	uv run python -m tp2.experiments.runner --suite sa_piloto --max-execucoes 3 --out $(SA_PILOTO_OUT) $(OPCOES)
 	uv run python -m tp2.experiments.resumo $(SA_PILOTO_OUT) | tee $(SA_PILOTO_OUT)/resumo.txt
+
+ag-piloto: verify
+	@echo "Piloto do AG: convergência e diversidade (3 execuções por instância)..."
+	uv run python -m tp2.experiments.runner --suite ag_piloto --max-execucoes 3 --out $(AG_PILOTO_OUT) $(OPCOES)
+	uv run python -m tp2.experiments.resumo $(AG_PILOTO_OUT) | tee $(AG_PILOTO_OUT)/resumo.txt
+
+ag-ajuste: verify
+	@echo "Ajuste do AG na média: N e Pm, 10 execuções com sementes fora do protocolo..."
+	uv run python -m tp2.experiments.runner --suite ag_ajuste --instancias media --max-execucoes 10 --base-seed 990000 --out $(AG_AJUSTE_OUT) $(OPCOES)
+	uv run python -m tp2.experiments.resumo $(AG_AJUSTE_OUT) | tee $(AG_AJUSTE_OUT)/resumo.txt
+
+ox-demo:
+	@echo "Exemplo passo a passo do cruzamento OX (para o relatório)..."
+	@mkdir -p results
+	uv run python -m tp2.problem.operators --demo --n 8 --seed 15 | tee results/ox_demo.txt
