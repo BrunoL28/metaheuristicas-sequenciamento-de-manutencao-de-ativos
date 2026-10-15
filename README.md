@@ -66,6 +66,8 @@ Pré-requisitos: [`uv`](https://github.com/astral-sh/uv) e `make`. Primeiro `mak
 | Testes | `make test` | terminal |
 | T1 — verificação da função de avaliação (4366, h* = 1875, Figura 1) | `make verify` | `results/verify.txt` |
 | T2 — comparação das vizinhanças (greedy descent, first improvement) e tempo por movimento | `make t2` | `results/<data>_t2/` (`runs.csv`, `otimos_locais.csv`, `curvas.csv`, `tempo_movimentos.csv`, `resumo.txt`); pasta atual em `results/LATEST_T2` |
+| Calibração do SA (T0, Tf, L, α por instância) | `make calibrate` | `configs/sa_<instância>.json`, `configs/sa_calibracao.txt` |
+| Piloto do SA: perfil de aceitação de pioras (3 execuções por instância) | `make sa-piloto` | `results/<data>_sa_piloto/` (`sa_aceitacao.csv`, `resumo.txt`) |
 
 _Rows for tables and figures are added as the missions land (plan C15)._
 
