@@ -1,0 +1,10 @@
+instancia,vizinhanca,us_completa,us_incremental,ganho
+pequena,swap,1.322,1.203,1.1
+pequena,insertion,1.273,1.444,0.88
+pequena,2opt,1.424,1.189,1.2
+media,swap,4.625,3.432,1.35
+media,insertion,4.696,3.649,1.29
+media,2opt,4.949,3.732,1.33
+grande,swap,13.092,9.059,1.45
+grande,insertion,13.136,9.517,1.38
+grande,2opt,13.606,9.654,1.41

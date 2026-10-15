@@ -2,7 +2,7 @@
 
 > Live worklist. Read this first every session; update it at every mission-end (and bump the date). Omit empty sections. Facts that change project state must also be written where that state lives (CONTEXT, plan status, Known Holes); the ✅ log is only a handoff aid.
 
-_Last updated: 2026-10-14_
+_Last updated: 2026-10-15_
 
 **Deadline: 2026-10-18.** Schedule and Git flow: `IMPLEMENTATION_PLAN.md` §11 (one branch and one PR per mission; squash-merge after Bruno approves).
 
@@ -13,13 +13,10 @@ _Last updated: 2026-10-14_
 
 ## 🟡 In progress
 
-- [ ] **M0** Delivery plan: PR #1 (`docs/plano-entrega`), awaiting Bruno's review.
-- [ ] **M1** Foundation + fitness: PR #2 (`feat/fundacao-fitness`, stacked on #1), CI green, awaiting review.
-- [ ] **M2** Interface + counter + neighborhoods: PR (`feat/vizinhancas`, stacked on #2), awaiting review.
+- [ ] **M3** Greedy descent + runner + T2: PR (`feat/busca-local-t2`), awaiting review. Group: confirm the insertion choice (CONTEXT §8).
 
 ## 🟢 This week / next
 
-- [ ] 15/10 **M3** Greedy descent (3 variants) + runner + T2 (`feat/busca-local-t2`).
 - [ ] 15/10 **M4** Simulated annealing + calibration (`feat/simulated-annealing`).
 - [ ] 15–16/10 **M5** Genetic algorithm (`feat/algoritmo-genetico`).
 - [ ] 16/10 **M6** T3 + extra experiments (`exp/t3-extra`).
@@ -38,6 +35,9 @@ _Last updated: 2026-10-14_
 - Memetic GA (GA + local search): mention in the discussion only.
 
 ## ✅ Recently done (last 2 weeks)
+
+- 2026-10-15 — M3: greedy descent + random restart (best / first / random with K = |N|), `Recorder`, parallel runner (seeds, append CSV, `--resume`, evals == B and re-evaluated best checks), `make t2`. T2 run → `results/2026-10-15_t2/` (210/210 ok): every neighborhood hits 1875 in 30/30 on pequena; **insertion** wins on media and grande and is adopted (CONTEXT §8). 75 tests green.
+- 2026-10-14 — PRs #1–#3 (M0–M2) merged by Bruno.
 
 - 2026-10-14 — M2: `Problem` protocol, `CountingProblem` (exact budget, best-so-far trace), swap/insertion/2-opt with incremental evaluation, AST architecture test, timing script. 56 tests green. Incremental gain measured at 1.1–1.4× (plan §1).
 - 2026-10-14 — M1: `uv` project (hatchling), Makefile (`setup test lint verify`), CI workflow, instance loader, h, constructive baselines and an exact DP for n = 12. 15 tests green; `make verify` confirms 4366, **h* = 1875 computed exactly**, greedy 3168, NN 2590, Fig. 1 39/22.

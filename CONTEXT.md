@@ -167,6 +167,7 @@ For each asset *j*: position (x_j, y_j), service duration p_j (hours), regulator
 | 2026-10-14 | Branch per mission + PR into `main`, squash-merge after Bruno's approval; commits/PRs carry no AI attribution | Group workflow; Arthur joined the repo | Bruno |
 | 2026-10-14 | Report: local TeX Live while writing, then export to Overleaf | No TeX installed; group edits on Overleaf | Bruno |
 | 2026-10-14 | Code delivered as a clean zip (`make zip`), without agent-protocol files | Statement allows zip or Git repo | Bruno |
+| 2026-10-15 | **Insertion** is the neighborhood for GD and SA in T3 and the GA mutation move | T2 (`results/2026-10-15_t2/`): best median on media (17 457.5 vs 18 468 2-opt, 24 252 swap) and grande (82 796.5 vs 89 078.5, 150 118); 30/30 optimal on pequena like the others; same cost per move (≈ 10 µs at n = 150) | T2 data; group confirms at PR review |
 
 ## 9. Open questions
 
