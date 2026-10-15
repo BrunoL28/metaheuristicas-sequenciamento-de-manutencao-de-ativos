@@ -1,0 +1,20 @@
+Verificação da função de avaliação h
+
+Instâncias (Seção 1.3):
+  pequena  n = 12   soma de p_j = 55  [OK]
+  media    n = 50   soma de p_j = 239  [OK]
+  grande   n = 150  soma de p_j = 684  [OK]
+
+Instância pequena (Seção 1.4):
+  h(1, 2, ..., 12) = 4366  [OK]
+  h* (programação dinâmica exata) = 1875  [OK]
+  h(rota ótima), reavaliada = 1875  [OK]
+  rota ótima = (5, 4, 1, 6, 7, 2, 8, 12, 3, 10, 9, 11)
+  guloso de menor acréscimo (desempate: deslocamento) = 3168  [OK]
+  vizinho mais próximo (referência) = 2590
+
+Exemplo da Figura 1 (n = 4):
+  h(1, 4, 2, 3) = 39  [OK]
+  h(1, 4, 3, 2) = 22  [OK]
+
+Resultado: todos os valores conferem.

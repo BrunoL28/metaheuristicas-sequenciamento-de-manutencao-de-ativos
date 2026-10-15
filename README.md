@@ -59,7 +59,14 @@ Credentials: none needed so far. If any appear (e.g. an Overleaf Git token), the
 
 ## Como reproduzir
 
-_To be filled as components land (plan C15): one row per table and figure of the report → exact `make` command → output file._
+Pré-requisitos: [`uv`](https://github.com/astral-sh/uv) e `make`. Primeiro `make setup`.
+
+| O quê | Comando | Saída |
+|---|---|---|
+| Testes | `make test` | terminal |
+| T1 — verificação da função de avaliação (4366, h* = 1875, Figura 1) | `make verify` | `results/verify.txt` |
+
+_Rows for tables and figures are added as the missions land (plan C15)._
 
 ## Getting started (fresh clone)
 
