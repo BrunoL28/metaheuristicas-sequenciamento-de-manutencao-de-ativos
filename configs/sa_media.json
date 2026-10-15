@@ -1,0 +1,18 @@
+{
+  "instancia": "media",
+  "vizinhanca": "insertion",
+  "T0": 25018.86008759483,
+  "Tf": 62.2488757394661,
+  "L": 300,
+  "alfa": 0.9880553875410075,
+  "orcamento": 150000,
+  "chi0": 0.9,
+  "chif": 0.001,
+  "mediana_piora": 2636,
+  "q10_piora": 430.0,
+  "pares_sorteados": 2000,
+  "pioras": 1041,
+  "avaliacoes_calibracao": 4000,
+  "fracao_do_orcamento": 0.02666666666666667,
+  "seed": 20261791
+}

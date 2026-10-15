@@ -1,0 +1,14 @@
+instância config                   exec     mín   mediana     média     máx ≤ ref   passos  ót.loc distintos  s/exec
+--------------------------------------------------------------------------------------------------------------------
+pequena   sa/geometrico/insertion     3    1875    1875.0    1875.0    1875     3  49999.0       -         -     0.2
+media     sa/geometrico/insertion     3   16334   17903.0   17701.3   18867     0 149999.0       -         -     1.3
+grande    sa/geometrico/insertion     3   75791   78688.0   77792.7   78899     0 299999.0       -         -     6.3
+
+≤ ref: execuções que atingiram ou superaram o valor de referência da Tabela 1. passos, ót.loc, distintos e s/exec são médias por execução.
+
+SA: aceitação de pioras (mediana) na janela        1     10     25     50     75     90    100
+----------------------------------------------------------------------------------------------
+pequena                                        0.877  0.775  0.603  0.167  0.020  0.004  0.002
+media                                          0.862  0.788  0.568  0.183  0.031  0.008  0.002
+grande                                         0.868  0.787  0.567  0.188  0.037  0.015  0.006
+Cada janela tem B/100 passos; a janela 1 é o início da execução e a 100, o fim.

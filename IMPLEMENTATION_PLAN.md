@@ -10,11 +10,11 @@
 
 ## 1. Current Implementation Status
 
-**Phase:** Phase 1 — build. Plan rev 1 and the delivery schedule (§11) approved 2026-10-14. M0–M2 merged 2026-10-14; M3 (greedy descent + runner + T2) in review; M4–M9 pending.
+**Phase:** Phase 1 — build. Plan rev 1 and the delivery schedule (§11) approved 2026-10-14. M0–M2 merged 2026-10-14; M3 (greedy descent + runner + T2) in review (PR #4); M4 (SA) in review, stacked on #4; M5–M9 pending.
 
 | # | Component | Status | Tested? | Notes |
 |---|---|---|---|---|
-| C0 | Project scaffolding (`pyproject.toml`, `uv.lock`, `Makefile`, package layout) | 🟡 In progress | `uv sync --locked`, ruff, pytest green; CI workflow `.github/workflows/ci.yml` | M1: hatchling backend (local uv 0.6.12 predates `uv_build`); Makefile has `setup test lint verify t2`, the other targets land with their missions |
+| C0 | Project scaffolding (`pyproject.toml`, `uv.lock`, `Makefile`, package layout) | 🟡 In progress | `uv sync --locked`, ruff, pytest green; CI workflow `.github/workflows/ci.yml` | M1: hatchling backend (local uv 0.6.12 predates `uv_build`); Makefile has `setup test lint verify t2 calibrate sa-piloto`, the other targets land with their missions |
 | C1 | `Problem` interface + `Move` type | ✅ Done (M2) | Exercised through C2/C5 tests | `src/tp2/core/interface.py`; AST test `tests/test_arquitetura.py` forbids `tp2.problem` imports in `tp2/algorithms` (checked to fail on a planted import) |
 | C2 | `CountingProblem` (budget, counter, best-so-far trace) | ✅ Done (M2) | B calls succeed and B+1 raises; mid-scan stop; `best_s` re-evaluates to `best_h`; non-evaluating methods don't count (`tests/test_counting.py`) | Stores only improvement events `(evals, best_h)`; the runner writes them to `curvas.csv`; any fixed grid (e.g. 201 points) is derived in C11 |
 | C3 | Instance loader | ✅ Done (M1) | n, Σp, base, symmetric T, no .5 ties (`tests/test_instance.py`) | `src/tp2/problem/instance.py` |
@@ -22,9 +22,9 @@
 | C5 | Neighborhoods: swap / insertion / 2-opt (+ incremental evaluation) | ✅ Done (M2) | Sizes, distinctness, Fig. 3 examples, hypothesis property incremental == full (150 random instances n ≤ 30), equality on pequena/media (`tests/test_neighborhoods.py`) | Incremental = rebuild only the suffix from the first touched position + evaluate from the cached prefix. Measured gain 1.1–1.4× (≤ 1.5× theoretical, since E[min(i,j)] ≈ n/3): see below |
 | C6 | Crossover (OX; PMX deferred) + mutation operators | ⬜ Not started | — | |
 | C7 | Greedy descent + random restart (3 variants) | ✅ Done (M3) | Exact budget for 3 variants × 3 neighborhoods; every complete `best`/`first` descent re-checked as a true local optimum; same seed → same trace; summary == telemetry (`tests/test_greedy_descent.py`) | `src/tp2/algorithms/greedy_descent.py`; per-descent telemetry (h, permutation signature, steps, complete or cut by budget) through `core/recorder.py` |
-| C8 | Simulated annealing + SA calibration script | ⬜ Not started | — | |
+| C8 | Simulated annealing + SA calibration script | ✅ Done (M4) | α takes T0 to Tf on the last level; exact budget; windows and T monotone; T → 0 gives no accepted worsening, T → ∞ accepts all; same seed → same run; calibration formulas; runner reads the versioned calibration (`tests/test_simulated_annealing.py`) | `src/tp2/algorithms/simulated_annealing.py`, `src/tp2/experiments/calibrate_sa.py` → `configs/sa_*.json` + `configs/sa_calibracao.txt`. Pilot `results/2026-10-15_sa_piloto/` (3 runs/instance): worsening acceptance ≈ 0.87 in the first window → 0.002–0.006 in the last |
 | C9 | Genetic algorithm (+ diversity logging) | ⬜ Not started | — | |
-| C10 | Experiment runner (parallel, seeded, CSV) | 🟡 Suite `t2` done (M3) | Seed rule, invariants, end-to-end run with interrupted `--resume` (`tests/test_runner.py`) | `src/tp2/experiments/{runner,configs,resumo}.py`. Suites `t3`/`extra` arrive with M4–M6 |
+| C10 | Experiment runner (parallel, seeded, CSV) | 🟡 Suites `t2` (M3) and `sa_piloto` (M4) done | Seed rule, invariants, end-to-end run with interrupted `--resume` (`tests/test_runner.py`) | `src/tp2/experiments/{runner,configs,resumo}.py`. SA parameters resolved per instance from `configs/sa_*.json` (α recomputed from B). Suites `t3`/`extra` arrive with M5–M6 |
 | C11 | Analysis: stats tables, boxplots, convergence, acceptance, diversity | ⬜ Not started | — | |
 | C12 | `verify` command (T1 output for the report) | ✅ Done (M1) | `make verify` exits 0; output in `results/verify.txt` | Computes h* = 1875 by exact DP instead of only quoting it |
 | C13 | Extra experiment: does crossover help? | ⬜ Not started | — | |
@@ -524,10 +524,10 @@ This project has no external services at runtime. The "integrations" are the loc
   With L and α tied to the budget so that T reaches Tf exactly at B: number of levels M = B / L, α = (Tf / T0)^(1/(M−1)). The run ends by budget; at the end T ≈ Tf.
 - **Calibration (per instance, offline, deterministic seed, NOT counted in B):**
   1. Sample 2 000 random (s, random move) pairs from random permutations. Collect Δ⁺ = positive Δh. Set **T0 = −median(Δ⁺) / ln(χ0)** with χ0 = 0.9, meaning ~90% of typical worsening moves are accepted at the start ("começa praticamente como random walk").
-  2. Run a short `first`-improvement descent to a local optimum (3 restarts) and sample Δ⁺ of random moves *around local optima*. Set **Tf = −q10(Δ⁺_local) / ln(χf)** with χf = 10⁻³, so even the smallest typical worsening near good solutions is almost never accepted at the end ("termina praticamente como greedy descent").
-  3. L = 100 (pequena), 300 (media), 1 000 (grande). α then follows from the formula above. The values are stored in `configs/sa_<inst>.json` with the sampled statistics (median, q10, sample sizes), so the report can show the calibration table.
+  2. **Tf = −q10(Δ⁺) / ln(χf)** with χf = 10⁻³, from the same sample, so even small worsenings (10th percentile) are almost never accepted at the end ("termina praticamente como greedy descent"). Δ⁺ near local optima is larger (q10 ≈ 1 760–1 980 vs 1 129 on grande), so acceptance there is even lower. *Changed in M4:* the original rule sampled Δ⁺ around 3 local optima, but full descents cost > 150k evaluations per optimum on grande (503k in total, more than B), and an exploratory pilot on seeds outside the protocol (10 runs, media/grande) didn't favour it: median 17 572 vs 17 836 on media, 89 576 vs 83 464 on grande.
+  3. L = 100 (pequena), 300 (media), 1 000 (grande). α then follows from the formula above (with B − 1 steps after the initial evaluation). The values are stored in `configs/sa_<inst>.json` with the sampled statistics (median, q10, sample sizes, evaluations spent), so the report can show the calibration table. Calibrated (M4): T0 = 5 481 / 25 019 / 63 416, Tf = 14.8 / 62.3 / 163.4, α = 0.98822 / 0.98806 / 0.98026.
   4. Justification sentence for the report: Δh scales with n (tens on pequena, thousands on grande; statement §2.4). A fixed T across instances would be a random walk on one and greedy descent on another. The per-instance calibration makes the *acceptance profile*, not the temperature, the thing that's held constant.
-  - Is calibration "free"? It's tuning, like choosing N/Pc/Pm for the GA. We disclose its cost (≈ 2–5% of B) in the report (Known Holes #7; the sensitivity check is deferred).
+  - Is calibration "free"? It's tuning, like choosing N/Pc/Pm for the GA. We disclose its cost in the report: 4 000 evaluations per instance (2 000 random solutions + 1 successor each) = 8% / 2.7% / 1.3% of B, done once per instance, not per run (Known Holes #7; the sensitivity check is deferred).
 - **Telemetry:** windows of W = B/100 evaluations: `worse_proposed`, `worse_accepted`, `rate`, `T` at the window end → `sa_acceptance.csv`. Plot: rate vs evaluations, one median line per instance with an IQR band. The expected shape is ≈ 0.9 at the start → ≈ 0 at the end. If the start is ≪ 0.9 or the end ≫ 0, the calibration failed, and that's the diagnostic the statement wants (§6 "SA mal calibrado vira outro algoritmo").
 - **Next:** C10.
 
@@ -635,7 +635,7 @@ This project has no external services at runtime. The "integrations" are the loc
 | 4 | Report workflow | ✅ Resolved 2026-10-14 | Local TeX Live → Overleaf by zip (§7.2). Bruno must install TeX Live before M8 |
 | 5 | Interface extension (`sucessores` yields `(move, h)`, extra `aplicar`, `h_s` param) vs the statement's "sugestão mínima" | Low risk | Keep; justify in report §2 as necessary for incremental evaluation without leaking the problem into algorithms |
 | 6 | Incremental eval suffix early-exit (δ = 0 after last touched position) | Deferred | Only if T2 timing shows evaluation dominates |
-| 7 | SA calibration evaluations not counted in B | Low risk | Decided 2026-10-14: disclose in the report as offline hyperparameter tuning. The sensitivity check is deferred (§3) |
+| 7 | SA calibration evaluations not counted in B | Low risk | Decided 2026-10-14: disclose in the report as offline hyperparameter tuning. Cost measured in M4: 4 000 evaluations per instance (8% / 2.7% / 1.3% of B), once per instance. The sensitivity check is deferred (§3) |
 | 8 | GA counts unchanged clones as evaluations | Low risk | Conservative choice; mention it. An alternative cache would favor the GA slightly |
 | 9 | Wall time measured under parallel load | Low risk | Also time 3 sequential runs per cell for the time table |
 | 10 | Delivery format | ✅ Resolved 2026-10-14 | Clean zip (`make zip`), no agent-protocol files (§7.3) |

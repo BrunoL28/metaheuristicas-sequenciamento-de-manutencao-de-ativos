@@ -17,7 +17,7 @@ Arquivos na pasta de saída:
 - ``runs.csv``: uma linha por execução;
 - ``curvas.csv``: cada melhoria do melhor global (run_id, evals, best_h);
 - um CSV por tabela de telemetria do algoritmo (``otimos_locais.csv`` na
-  descida gulosa);
+  descida gulosa, ``sa_aceitacao.csv`` no SA);
 - ``config.json``: parâmetros, commit, versão do Python e máquina.
 
 Uso: ``uv run python -m tp2.experiments.runner --suite t2 --out results/<data>_t2``
@@ -40,13 +40,14 @@ from multiprocessing import Pool
 from pathlib import Path
 
 from tp2.algorithms.greedy_descent import descida_gulosa
+from tp2.algorithms.simulated_annealing import alfa_para_orcamento, simulated_annealing
 from tp2.core.counting import CountingProblem
 from tp2.core.recorder import Recorder
-from tp2.experiments import configs
+from tp2.experiments import calibrate_sa, configs
 from tp2.problem.instance import RAIZ_PROJETO, load_named
 from tp2.problem.maintenance import MaintenanceProblem
 
-ALGORITMOS = {"gd": descida_gulosa}
+ALGORITMOS = {"gd": descida_gulosa, "sa": simulated_annealing}
 
 COLUNAS = [
     "run_id",
@@ -68,6 +69,7 @@ COLUNAS = [
     "descidas",
     "otimos_locais",
     "otimos_distintos",
+    "resumo",
     "params",
     "best_perm",
     "git_commit",
@@ -93,23 +95,45 @@ def montar_jobs(
             execucoes = configs.EXECUCOES[inst]
             if max_execucoes is not None:
                 execucoes = min(execucoes, max_execucoes)
+            orcamento_inst = orcamento or configs.ORCAMENTO[inst]
+            params = _parametros(cel, inst, orcamento_inst)
             for run in range(execucoes):
                 job = {
                     "suite": suite,
                     "algoritmo": cel.algoritmo,
                     "variante": cel.variante,
                     "vizinhanca": cel.vizinhanca,
-                    "params": dict(cel.params),
+                    "params": params,
                     "instancia": inst,
                     "run": run,
                     "seed": configs.semente(inst, run, base_seed),
-                    "orcamento": orcamento or configs.ORCAMENTO[inst],
+                    "orcamento": orcamento_inst,
                 }
                 job["run_id"] = run_id(job)
                 jobs.append(job)
     # As execuções mais caras primeiro, para equilibrar a carga entre processos.
     jobs.sort(key=lambda j: -j["orcamento"])
     return jobs
+
+
+def _parametros(cel: configs.Celula, instancia: str, orcamento: int) -> dict:
+    """Parâmetros da célula, completados com os que dependem da instância e de B."""
+    params = dict(cel.params)
+    if cel.algoritmo == "sa":
+        cal = calibrate_sa.carregar(instancia)
+        if cal["vizinhanca"] != cel.vizinhanca:
+            raise ValueError(
+                f"configs/sa_{instancia}.json foi calibrado com {cal['vizinhanca']}, "
+                f"não {cel.vizinhanca}; rode make calibrate"
+            )
+        params.update(
+            T0=cal["T0"],
+            Tf=cal["Tf"],
+            L=cal["L"],
+            alfa=alfa_para_orcamento(cal["T0"], cal["Tf"], orcamento, cal["L"]),
+            janela=max(1, orcamento // 100),
+        )
+    return params
 
 
 def executar(job: dict) -> dict:
@@ -156,6 +180,7 @@ def executar(job: dict) -> dict:
     }
     for chave in ("passos", "descidas", "otimos_locais", "otimos_distintos"):
         linha[chave] = resumo.get(chave, "")
+    linha["resumo"] = json.dumps(resumo, sort_keys=True)
     return {
         "linha": linha,
         "curva": problema.improvements,
