@@ -16,7 +16,7 @@ from tp2.problem.maintenance import MaintenanceProblem
 from tp2.problem.operators import cortes, ox
 
 # Algoritmo (A) da tabela principal: a variante com a melhor mediana na média
-# no T3 (CONTEXT §8). As três variantes aparecem em gd_variantes.tex.
+# no T3 (relatório, Seção 5). As três variantes aparecem em gd_variantes.tex.
 ALGORITMO_A = "GD-random"
 PRINCIPAIS = (ALGORITMO_A, "SA", "AG")
 VARIANTES_GD = ("GD-best", "GD-first", "GD-random")

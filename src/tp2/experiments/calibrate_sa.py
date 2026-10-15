@@ -15,10 +15,10 @@ constante é o perfil de aceitação:
 
 Uma versão anterior tirava o q10 de sucessores de ótimos locais. Isso exigia
 descidas completas (mais de 150 mil avaliações por ótimo na grande) e, num
-piloto com sementes fora do protocolo, não melhorou o SA (decisão em
-CONTEXT §8). A calibração é ajuste de hiperparâmetro feito uma vez, fora das
-execuções: as avaliações gastas aqui não entram no orçamento das execuções e
-ficam registradas no JSON para o relatório declarar o custo.
+piloto com sementes fora do protocolo, não melhorou o SA. A calibração é
+ajuste de hiperparâmetro feito uma vez, fora das execuções: as avaliações
+gastas aqui não entram no orçamento das execuções e ficam registradas no JSON
+para o relatório declarar o custo.
 
 Uso: ``uv run python -m tp2.experiments.calibrate_sa`` → ``configs/sa_<instância>.json``
 """
