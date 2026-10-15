@@ -21,7 +21,11 @@ Variantes (para o experimento extra, "o AG compensa?"):
   permutação aleatória nova. Se o resultado empatar com o padrão, o
   cruzamento está agindo como uma macromutação, não combinando blocos bons.
 
-A variante só com mutação é ``padrao`` com ``Pc = 0``.
+A variante só com mutação é ``padrao`` com ``Pc = 0``. Com ``p_ls > 0`` o AG
+vira memético: cada filho, depois de avaliado, desce com probabilidade
+``p_ls`` até um ótimo local (first improvement em ordem aleatória, como a
+descida gulosa) e volta melhorado para a população (lamarckiano). Cada
+sucessor examinado conta 1 avaliação.
 
 Telemetria por geração (tabela ``ag_geracoes``): melhor h e h médio da
 população, número de permutações distintas e distância média entre pares
@@ -53,6 +57,7 @@ def algoritmo_genetico(
     Pm: float,
     k: int = 3,
     elite: int = 2,
+    p_ls: float = 0.0,
     rec: Recorder | None = None,
 ) -> dict:
     """Roda até o orçamento acabar e devolve o resumo da execução.
@@ -69,7 +74,7 @@ def algoritmo_genetico(
 
     geracao = 0
     avaliacoes = 0
-    cruzamentos = mutacoes = 0
+    cruzamentos = mutacoes = descidas = 0
     s_telemetria = 0.0
     pop: list[Solution] = []
     hs: list[int] = []
@@ -79,6 +84,20 @@ def algoritmo_genetico(
         hv = problema.h(s)
         avaliacoes += 1
         return hv
+
+    def descer(s: Solution, hv: int) -> tuple[Solution, int]:
+        nonlocal avaliacoes, descidas
+        descidas += 1
+        melhorou = True
+        while melhorou:
+            melhorou = False
+            for mov, h_viz in problema.sucessores(s, hv, rng):
+                avaliacoes += 1
+                if h_viz < hv:
+                    s, hv = problema.aplicar(s, mov), h_viz
+                    melhorou = True
+                    break
+        return s, hv
 
     def torneio() -> Solution:
         melhor = min(rng.sample(range(N), k), key=hs.__getitem__)
@@ -124,7 +143,10 @@ def algoritmo_genetico(
                     if rng.random() < Pm:
                         filho = problema.mutacao(filho, rng)
                         mutacoes += 1
-                    nova_h.append(avaliar(filho))
+                    h_filho = avaliar(filho)
+                    if p_ls and rng.random() < p_ls:
+                        filho, h_filho = descer(filho, h_filho)
+                    nova_h.append(h_filho)
                     nova.append(filho)
             pop, hs = nova, nova_h
             geracao += 1
@@ -136,6 +158,7 @@ def algoritmo_genetico(
         "geracoes": geracao,
         "cruzamentos": cruzamentos,
         "mutacoes": mutacoes,
+        "descidas": descidas,
         "avaliacoes": avaliacoes,
         "s_telemetria": s_telemetria,
     }

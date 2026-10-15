@@ -1,4 +1,4 @@
-.PHONY: setup test lint verify t2 calibrate sa-piloto ag-piloto ag-ajuste ox-demo
+.PHONY: setup test lint verify t2 calibrate sa-piloto ag-piloto ag-ajuste ox-demo memetico-ajuste experiments extra robustez tempos
 
 export MPLBACKEND = Agg
 
@@ -7,6 +7,11 @@ T2_OUT ?= results/$(DATA)_t2
 SA_PILOTO_OUT ?= results/$(DATA)_sa_piloto
 AG_PILOTO_OUT ?= results/$(DATA)_ag_piloto
 AG_AJUSTE_OUT ?= results/$(DATA)_ag_ajuste
+MEMETICO_AJUSTE_OUT ?= results/$(DATA)_memetico_ajuste
+T3_OUT ?= results/$(DATA)_t3
+EXTRA_OUT ?= results/$(DATA)_extra
+ROBUSTEZ_OUT ?= results/$(DATA)_robustez
+TEMPOS_OUT ?= results/$(DATA)_tempos
 # JOBS=n limita os processos; RESUME=1 retoma uma pasta interrompida.
 OPCOES = $(if $(JOBS),--jobs $(JOBS)) $(if $(RESUME),--resume)
 
@@ -53,6 +58,35 @@ ag-ajuste: verify
 	@echo "Ajuste do AG na média: N e Pm, 10 execuções com sementes fora do protocolo..."
 	uv run python -m tp2.experiments.runner --suite ag_ajuste --instancias media --max-execucoes 10 --base-seed 990000 --out $(AG_AJUSTE_OUT) $(OPCOES)
 	uv run python -m tp2.experiments.resumo $(AG_AJUSTE_OUT) | tee $(AG_AJUSTE_OUT)/resumo.txt
+
+memetico-ajuste: verify
+	@echo "Ajuste do AG memético: probabilidade de busca local, sementes fora do protocolo..."
+	uv run python -m tp2.experiments.runner --suite memetico_ajuste --instancias media grande --max-execucoes 10 --base-seed 990000 --out $(MEMETICO_AJUSTE_OUT) $(OPCOES)
+	uv run python -m tp2.experiments.resumo $(MEMETICO_AJUSTE_OUT) | tee $(MEMETICO_AJUSTE_OUT)/resumo.txt
+
+experiments: verify
+	@echo "T3: descida gulosa (3 variantes), SA e AG nas três instâncias (30/30/10 execuções)..."
+	uv run python -m tp2.experiments.runner --suite t3 --out $(T3_OUT) $(OPCOES)
+	uv run python -m tp2.experiments.resumo $(T3_OUT) | tee $(T3_OUT)/resumo.txt
+	@echo $(notdir $(T3_OUT)) > results/LATEST_T3
+
+extra: verify
+	@echo "Experimento extra: AG com OX, só mutação, headless chicken, PMX e memético..."
+	uv run python -m tp2.experiments.runner --suite extra --out $(EXTRA_OUT) $(OPCOES)
+	uv run python -m tp2.experiments.resumo $(EXTRA_OUT) | tee $(EXTRA_OUT)/resumo.txt
+	@echo $(notdir $(EXTRA_OUT)) > results/LATEST_EXTRA
+
+robustez: verify
+	@echo "Robustez: SA sem as avaliações da calibração e os três algoritmos com 2B..."
+	uv run python -m tp2.experiments.runner --suite robustez --out $(ROBUSTEZ_OUT) $(OPCOES)
+	uv run python -m tp2.experiments.resumo $(ROBUSTEZ_OUT) | tee $(ROBUSTEZ_OUT)/resumo.txt
+	@echo $(notdir $(ROBUSTEZ_OUT)) > results/LATEST_ROBUSTEZ
+
+tempos: verify
+	@echo "Tempos sem carga paralela: células do T3, 3 execuções por instância, 1 processo..."
+	uv run python -m tp2.experiments.runner --suite tempos --max-execucoes 3 --jobs 1 --out $(TEMPOS_OUT)
+	uv run python -m tp2.experiments.resumo $(TEMPOS_OUT) | tee $(TEMPOS_OUT)/resumo.txt
+	@echo $(notdir $(TEMPOS_OUT)) > results/LATEST_TEMPOS
 
 ox-demo:
 	@echo "Exemplo passo a passo do cruzamento OX (para o relatório)..."

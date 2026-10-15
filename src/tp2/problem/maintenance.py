@@ -11,7 +11,7 @@ from collections.abc import Iterator, Sequence
 
 from tp2.problem.instance import Instance
 from tp2.problem.neighborhoods import VIZINHANCAS, Mov
-from tp2.problem.operators import cruzamento_ox
+from tp2.problem.operators import CRUZAMENTOS
 
 
 class MaintenanceProblem:
@@ -21,10 +21,17 @@ class MaintenanceProblem:
     ``sucessor_aleatorio`` (``swap``, ``insertion`` ou ``2opt``). Com
     ``incremental=True`` os sucessores são avaliados a partir do prefixo
     inalterado da solução corrente; com ``False``, do zero (só para medir o
-    ganho de tempo; os valores são idênticos).
+    ganho de tempo; os valores são idênticos). ``cruzamento`` escolhe o
+    operador do AG (``ox`` ou ``pmx``).
     """
 
-    def __init__(self, instancia: Instance, vizinhanca: str = "swap", incremental: bool = True):
+    def __init__(
+        self,
+        instancia: Instance,
+        vizinhanca: str = "swap",
+        incremental: bool = True,
+        cruzamento: str = "ox",
+    ):
         self.instancia = instancia
         self.n = instancia.n
         # Listas simples são mais rápidas que tuplas aninhadas no laço de h.
@@ -33,6 +40,7 @@ class MaintenanceProblem:
         self._D = list(instancia.d)
         self._W = list(instancia.w)
 
+        self._cruzar = CRUZAMENTOS[cruzamento]
         self.viz = VIZINHANCAS[vizinhanca]
         self.incremental = incremental
         self._movimentos = self.viz.movimentos(self.n)
@@ -148,8 +156,8 @@ class MaintenanceProblem:
     def cruzamento(
         self, s1: Sequence[int], s2: Sequence[int], rng: random.Random
     ) -> tuple[list[int], list[int]]:
-        """OX na convenção do slide (``tp2.problem.operators``). Não avalia."""
-        return cruzamento_ox(s1, s2, rng)
+        """OX (convenção do slide) ou PMX, conforme o construtor. Não avalia."""
+        return self._cruzar(s1, s2, rng)
 
     def mutacao(self, s: Sequence[int], rng: random.Random) -> list[int]:
         """Aplica um movimento aleatório da vizinhança configurada. Não avalia."""

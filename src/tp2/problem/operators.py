@@ -11,6 +11,13 @@ O filho é sempre uma permutação: o bloco não tem repetição e o preenchimen
 só usa genes que ainda não estão no filho. O segundo filho troca os papéis
 dos pais.
 
+Cruzamento PMX (partially mapped crossover, Goldberg e Lingle, 1985), usado
+no experimento extra para comparar com o OX: o filho herda o bloco do pai 1
+nas mesmas posições e o resto vem do pai 2 nas mesmas posições; quando um
+gene do pai 2 já está no bloco, segue-se o mapeamento bloco do pai 1 ↔ bloco
+do pai 2 até achar uma posição livre. O OX preserva a ordem relativa do pai
+2; o PMX preserva as posições absolutas.
+
 Mutação: um movimento aleatório da vizinhança configurada (ver
 ``MaintenanceProblem.mutacao``).
 
@@ -38,6 +45,28 @@ def ox(p1: Sequence[int], p2: Sequence[int], a: int, b: int) -> list[int]:
     return filho  # type: ignore[return-value]
 
 
+def pmx(p1: Sequence[int], p2: Sequence[int], a: int, b: int) -> list[int]:
+    """Filho do PMX com o bloco p1[a..b] (inclusive) mantido no lugar."""
+    n = len(p1)
+    filho: list[int | None] = [None] * n
+    filho[a : b + 1] = p1[a : b + 1]
+    no_bloco = set(p1[a : b + 1])
+    posicao_p2 = {g: k for k, g in enumerate(p2)}
+    for k in range(a, b + 1):
+        gene = p2[k]
+        if gene in no_bloco:
+            continue
+        # Segue o mapeamento até sair do bloco.
+        destino = k
+        while a <= destino <= b:
+            destino = posicao_p2[p1[destino]]
+        filho[destino] = gene
+    for k in range(n):
+        if filho[k] is None:
+            filho[k] = p2[k]
+    return filho  # type: ignore[return-value]
+
+
 def cortes(n: int, rng: random.Random) -> tuple[int, int]:
     """Dois pontos de corte distintos a < b, sorteados uniformemente."""
     a, b = sorted(rng.sample(range(n), 2))
@@ -49,6 +78,16 @@ def cruzamento_ox(
 ) -> tuple[list[int], list[int]]:
     a, b = cortes(len(p1), rng)
     return ox(p1, p2, a, b), ox(p2, p1, a, b)
+
+
+def cruzamento_pmx(
+    p1: Sequence[int], p2: Sequence[int], rng: random.Random
+) -> tuple[list[int], list[int]]:
+    a, b = cortes(len(p1), rng)
+    return pmx(p1, p2, a, b), pmx(p2, p1, a, b)
+
+
+CRUZAMENTOS = {"ox": cruzamento_ox, "pmx": cruzamento_pmx}
 
 
 def demo(n: int, seed: int) -> str:
